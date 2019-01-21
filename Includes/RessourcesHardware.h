@@ -19,7 +19,7 @@ extern DigitalIn _Etor4;
 extern DigitalIn _Etor5;
 extern DigitalIn _Etor6;
 extern DigitalIn _Etor_CanRx;
-extern DigitalIn _Etor_CanTx;
+extern DigitalIn _Etor_xbee_status;
 
 
 extern AnalogIn _Mes_Vbat;

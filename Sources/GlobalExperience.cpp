@@ -33,6 +33,29 @@ CGlobale::~CGlobale()
 
 //___________________________________________________________________________
  /*!
+   \brief
+
+   \param --
+   \return --
+*/
+void CGlobale::IRQ_Serial_PC()
+{
+    char rxData;
+   _led2 = !_led2;
+   rxData = _rs232_pc_rx.getc();
+   _rs232_xbee_network_tx.putc(rxData);
+}
+
+void CGlobale::IRQ_Serial_XBEE()
+{
+    char rxData;
+   _led3 = !_led3;
+   rxData = _rs232_xbee_network_rx.getc();
+   _rs232_pc_tx.putc(rxData);
+}
+
+//___________________________________________________________________________
+ /*!
    \brief Point d'entrée pour l'execution de toute l'application
 
    \param --
@@ -40,49 +63,81 @@ CGlobale::~CGlobale()
 */
 void CGlobale::Run(void)
 {
-  // Initialise la vitesse de transmission avec le PC
-  _rs232_pc_tx.baud(115200);
-  _rs232_pc_tx.format(8, Serial::None, 1);   	// 8 bits de données / Pas de parité / 1 bit de stop
-  _rs232_pc_rx.baud(115200);
-  _rs232_pc_rx.format(8, Serial::None, 1);   	// 8 bits de données / Pas de parité / 1 bit de stop
+    // Initialise la vitesse de transmission avec le PC
+    _rs232_pc_tx.baud(9600);
+    _rs232_pc_tx.format(8, Serial::None, 1);   	// 8 bits de données / Pas de parité / 1 bit de stop
+    _rs232_pc_rx.baud(9600);
+    _rs232_pc_rx.format(8, Serial::None, 1);   	// 8 bits de données / Pas de parité / 1 bit de stop
 
-_led1 = 1;
- _rs232_pc_tx.printf("\n\rHello\n\r");
- 
+    _rs232_xbee_network_tx.baud(9600);
+    _rs232_xbee_network_tx.format(8, Serial::None, 1);   	// 8 bits de données / Pas de parité / 1 bit de stop
+    _rs232_xbee_network_rx.baud(9600);
+    _rs232_xbee_network_rx.format(8, Serial::None, 1);   	// 8 bits de données / Pas de parité / 1 bit de stop
+
+    _rs232_pc_tx.printf("\n\rHello\n\r");
+
+    //_rs232_pc_rx.attach(this, &CGlobale::IRQ_Serial_PC);  	// Callback sur réception d'une donnée sur la RS232
+
+    _rs232_pc_rx.attach(this, &CGlobale::IRQ_Serial_PC);  	// Callback sur réception d'une donnée sur la RS232
+    //_rs232_xbee_network_rx.attach(this, &CGlobale::IRQ_Serial_XBEE);  	// Callback sur réception d'une donnée sur la RS232
+
+
   // Attends la montée de toutes les alimentation et l'initialisation de l'écran
   // Temps nécessaire en pratique pour que l'écran tactile ai fini de démarrer
   // avant de commencer à  lui en envoyer des messages (et d'en recevoir) 
-  wait_ms(3000);
+  wait_ms(1000);
 
 
- // Lecture des paramètres EEPROM et recopie dans les données membres 
- // de chaque classe en RAM
- m_eeprom.Read();
+  // Lecture des paramètres EEPROM et recopie dans les données membres
+  // de chaque classe en RAM
+  m_eeprom.Read();
 
-  _rs232_pc_tx.printf("\n\rCeci est le mode autonome\n\r");
-  
-   //m_LaBotBox.Start();
-   m_messenger_xbee_ntw.start();
 
-   //m_match.Initialise();
+  //m_LaBotBox.Start();
+  m_messenger_xbee_ntw.start();
+  wait(1);
 
-   // Initialise une IRQ sur réception RS232 de la caméra
-   // Ligne ci-dessous mise en commentaire volontairement tant que la pinoche RX est en l'air (pour éviter d'avoir des IRQ parasites)
-   // TODO: à  décommenter dès que la caméra sera branchée
-   //_rs232_camera_rx.attach(&Application, &CGlobale::ReceiveRS232_Camera);  	// Callback sur réception d'une donnée sur la RS232
-  
-   periodicTick.attach(&Application, &CGlobale::IRQ_Tick_ModeAutonome, (float(PERIODE_TICK)/1000.0f));
+  //unsigned char buff[] = "+++";
+  //m_xbee.write(buff, 3);
 
-   while(1) {
-       fflush(stdout); // ajout obligatoire ou un wait_us(1) sinon blocage de l'application
-       if (Tick) {
-           Tick = 0;
-           SequenceurModeAutonome();
-       }
-   }
 
+// XBEE n°1
+  tXbeeSettings xbee_settings;
+  xbee_settings.APIMODE = '1';
+  strcpy(xbee_settings.CHANNEL, "0E");
+  xbee_settings.COORDINATOR = '1';
+  xbee_settings.COORDINATOR_OPTION = '4';
+  strcpy(xbee_settings.PANID, "3321");
+  strcpy(xbee_settings.KEY, "6910DEA76FC0328DEBB4307854EDFC42");
+  xbee_settings.ID = '1';
+  xbee_settings.SECURITY = '1';
+
+  m_xbee.init(xbee_settings);
+
+  //_rs232_xbee_network_rx.puts("+++");
+/*
+XBEE n°2
+    tXbeeSettings xbee_settings;
+    xbee_settings.APIMODE = '1';
+    strcpy(xbee_settings.CHANNEL, "0E");
+    xbee_settings.COORDINATOR = '0'; // -------------
+    xbee_settings.COORDINATOR_OPTION = 0x04;
+    strcpy(xbee_settings.PANID, "3321");
+    strcpy(xbee_settings.KEY, "6910DEA76FC0328DEBB4307854EDFC42");
+    xbee_settings.ID = '2';  // ------
+    xbee_settings.SECURITY = '1';
+
+ */
+
+
+  periodicTick.attach(&Application, &CGlobale::IRQ_Tick_ModeAutonome, (float(PERIODE_TICK)/1000.0f));
 
   while(1) {
+      fflush(stdout); // ajout obligatoire ou un wait_us(1) sinon blocage de l'application
+      if (Tick) {
+          Tick = 0;
+          SequenceurModeAutonome();
+      }
   }
 }
 
@@ -118,12 +173,17 @@ void CGlobale::SequenceurModeAutonome(void)
   static unsigned int cpt500msec = 0;
   static unsigned int cpt1sec = 0;
   static unsigned char once = 0;
+  static bool init_once = 0;
 
   // ______________________________
   cpt10msec++;
   if (cpt10msec >= TEMPO_10msec) {
   	cpt10msec = 0;
 
+    if (init_once == 0) {
+        init_once = 1;
+
+    }
     //m_LaBotBox.Execute();
   }	 
 
@@ -132,6 +192,7 @@ void CGlobale::SequenceurModeAutonome(void)
   if (cpt20msec >= TEMPO_20msec) {
 	cpt20msec = 0;
 
+    m_leds.setState(LED_4, _Etor_xbee_status);
  }
 
 
@@ -140,7 +201,7 @@ void CGlobale::SequenceurModeAutonome(void)
   if (cpt50msec >= TEMPO_50msec) {
   	cpt50msec = 0;
 
-    m_messenger_xbee_ntw.execute();
+    // m_messenger_xbee_ntw.execute();
     m_leds.compute();
   }
 

@@ -7,6 +7,7 @@
 #include "CLeds.h"
 #include "CEEPROM.h"
 #include "MessengerXbeeNetwork2019.h"
+#include "xbeedriver.h"
 
 typedef enum {
 	MODE_AUTONOME = 0,
@@ -34,33 +35,37 @@ typedef enum {
 //! Classe de gestion des options d'exécution passees en ligne de commande
 class CGlobale {
 public :
-	//! Le mode de fonctionnement (autonome ou piloté via Anaconbot)
-	unsigned int ModeFonctionnement;
+    //! Le mode de fonctionnement (autonome ou piloté via Anaconbot)
+    unsigned int ModeFonctionnement;
 
- 	//! La gestion d'Anaconbot
-	//CLaBotBox m_LaBotBox;
-	//! Le gestionnaire d'EEPROM
+    //! La gestion d'Anaconbot
+    //CLaBotBox m_LaBotBox;
+    //! Le gestionnaire d'EEPROM
     CEEPROM m_eeprom;
     //! La gestion des Led
     CLeds m_leds;
-
+    //! Xbee driver
+    XbeeDriver m_xbee;
+    //! Network
     MessengerXbeeNetwork m_messenger_xbee_ntw;
 
- 
-	CGlobale();
-	~CGlobale();
+    CGlobale();
+    ~CGlobale();
 
-	//! Point d'entree pour lancer l'application
-	void Run(void);
+    //! Point d'entree pour lancer l'application
+    void Run(void);
 
-	//!  Le programme d'IRQ qui gere le timer
-	void IRQ_Tick_ModeAutonome(void);
+    //!  Le programme d'IRQ qui gere le timer
+    void IRQ_Tick_ModeAutonome(void);
+    void IRQ_Serial_PC();
+    void IRQ_Serial_XBEE();
+
 
 private : 
-	//! Le tick du sequenceur de tache
-	unsigned int Tick;
+    //! Le tick du sequenceur de tache
+    unsigned int Tick;
 
-	void SequenceurModeAutonome();
+    void SequenceurModeAutonome();
 };
 
 

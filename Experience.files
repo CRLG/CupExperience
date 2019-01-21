@@ -178,6 +178,7 @@ ext/mbed-common-rob/Sources/MessagerieLaBotBox.cpp
 Sources/main.cpp
 Sources/MessengerXbeeNetwork2019.cpp
 Sources/RessoucesHardware.cpp
+Sources/GlobalExperience.cpp
 Sources/xbeedriver.cpp
 
 ext/CppRobLib/Communication/Messenger/databasebase.cpp
