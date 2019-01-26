@@ -4,6 +4,8 @@
 #include "databasexbeenetwork2019.h"
 #include "transportergeneric.h"
 #include "messengerinterfacebase.h"
+#include "xbeedriver.h"
+
 
 // ====================================================
 //
@@ -21,6 +23,7 @@ public:
 
     void test_RX();
     void test_TX();
+    void readEEPROM();
 
     // =============================================
     //    Reimplement MessengerInterfaceBase virual
@@ -43,6 +46,10 @@ public:
     DatabaseXbeeNetwork2019 m_database;
     TransporterGeneric m_transporter;
 
+    //! Xbee driver
+    XbeeDriver m_xbee;
+    //! Xbee settings
+    tXbeeSettings m_xbee_settings;
 };
 
 #endif // _XBEE_NETWORK_MESSENGER_2019_H_

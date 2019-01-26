@@ -181,6 +181,11 @@ Sources/RessoucesHardware.cpp
 Sources/GlobalExperience.cpp
 Sources/xbeedriver.cpp
 
+Includes/MessengerXbeeNetwork2019.h
+Includes/RessoucesHardware.h
+Includes/GlobalExperience.h
+Includes/xbeedriver.h
+
 ext/CppRobLib/Communication/Messenger/databasebase.cpp
 ext/CppRobLib/Communication/Messenger/databasebase.h
 ext/CppRobLib/Communication/Messenger/messagebase.cpp

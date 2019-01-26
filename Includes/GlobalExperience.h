@@ -44,8 +44,6 @@ public :
     CEEPROM m_eeprom;
     //! La gestion des Led
     CLeds m_leds;
-    //! Xbee driver
-    XbeeDriver m_xbee;
     //! Network
     MessengerXbeeNetwork m_messenger_xbee_ntw;
 
@@ -55,10 +53,13 @@ public :
     //! Point d'entree pour lancer l'application
     void Run(void);
 
+    //! Lecture des paramètres EEPROM
+    void readEEPROM();
+
     //!  Le programme d'IRQ qui gere le timer
     void IRQ_Tick_ModeAutonome(void);
     void IRQ_Serial_PC();
-    void IRQ_Serial_XBEE();
+    //void IRQ_Serial_XBEE();
 
 
 private : 

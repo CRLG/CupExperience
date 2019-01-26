@@ -12,11 +12,40 @@ MessengerXbeeNetwork::~MessengerXbeeNetwork()
 {
 }
 
+void MessengerXbeeNetwork::readEEPROM()
+{
+    bool state;
+    state = Application.m_eeprom.getValue("XBEE.APIMODE", (char*)(&(m_xbee_settings.APIMODE)));
+    printf("State was %d\n\r", state);
+    Application.m_eeprom.getValue("XBEE.CHANNEL", (char*)(&(m_xbee_settings.CHANNEL)));
+    Application.m_eeprom.getValue("XBEE.COORDINATOR", (char*)(&(m_xbee_settings.COORDINATOR)));
+    Application.m_eeprom.getValue("XBEE.COORDINATOR_OPTION", (char*)(&(m_xbee_settings.COORDINATOR_OPTION)));
+    Application.m_eeprom.getValue("XBEE.PANID", (char*)(&(m_xbee_settings.PANID)));
+
+    Application.m_eeprom.getValue("XBEE.KEY", (char*)(&(m_xbee_settings.KEY)));
+    Application.m_eeprom.getValue("XBEE.ID", (char*)(&(m_xbee_settings.ID)));
+    Application.m_eeprom.getValue("XBEE.SECURITY", (char*)(&(m_xbee_settings.SECURITY)));
+
+    _rs232_pc_tx.printf("\n\rXBEE SETTINGS FROM EEPROM\r\n");
+    _rs232_pc_tx.printf("  >APIMODE=%s\r\n", m_xbee_settings.APIMODE);
+    _rs232_pc_tx.printf("  >XBEE.CHANNEL=%s\r\n", m_xbee_settings.CHANNEL);
+    _rs232_pc_tx.printf("  >XBEE.COORDINATOR=%s\r\n", m_xbee_settings.COORDINATOR);
+    _rs232_pc_tx.printf("  >COORDINATOR_OPTION=%s\r\n", m_xbee_settings.COORDINATOR_OPTION);
+    _rs232_pc_tx.printf("  >PANID=%s\r\n", m_xbee_settings.PANID);
+    _rs232_pc_tx.printf("  >KEY=%s\r\n", m_xbee_settings.KEY);
+    _rs232_pc_tx.printf("  >ID=%s\r\n", m_xbee_settings.ID);
+    _rs232_pc_tx.printf("  >SECURITY=%s\r\n", m_xbee_settings.SECURITY);
+}
+
 // ______________________________________________
 void MessengerXbeeNetwork::start()
 {
-    while (_rs232_xbee_network_rx.readable()) _rs232_xbee_network_rx.getc(); // Nettoie tout octet en attente dans le buffer
+    readEEPROM();
+
+    m_xbee.init(m_xbee_settings);
+
     m_database.restart();
+    while (_rs232_xbee_network_rx.readable()) _rs232_xbee_network_rx.getc(); // Nettoie tout octet en attente dans le buffer
     _rs232_xbee_network_rx.attach(this, &MessengerXbeeNetwork::IRQ_ReceiveRS232);  	// Callback sur réception d'une donnée sur la RS232
 }
 // ______________________________________________
@@ -25,6 +54,7 @@ void MessengerXbeeNetwork::stop()
     _rs232_xbee_network_rx.attach(NULL); // Supprime l'IRQ sur réception RS232
 }
 
+
 // ______________________________________________
 void MessengerXbeeNetwork::IRQ_ReceiveRS232()
 {
@@ -32,8 +62,9 @@ void MessengerXbeeNetwork::IRQ_ReceiveRS232()
     rxData = _rs232_xbee_network_rx.getc();
     _rs232_pc_tx.putc(rxData);
     _led3 = !_led3;
-    decode(rxData);
+    m_xbee.decode(rxData);
 }
+
 
 // ______________________________________________
 void MessengerXbeeNetwork::execute()

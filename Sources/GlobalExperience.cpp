@@ -33,6 +33,31 @@ CGlobale::~CGlobale()
 
 //___________________________________________________________________________
  /*!
+   \brief LEcture des paramètres EEPROM
+
+   \param --
+   \return --
+*/
+void CGlobale::readEEPROM()
+{
+    bool state = m_eeprom.getValue("ModeFonctionnement", &Application.ModeFonctionnement);
+    _rs232_pc_tx.printf("[%d]:Mode fonctionnement = %d", state, Application.ModeFonctionnement);
+
+   // XBEE n°1
+//     m_xbee_settings.APIMODE = '1';
+//     strcpy(m_xbee_settings.CHANNEL, "0E");
+//     m_xbee_settings.COORDINATOR = '1';
+//     m_xbee_settings.COORDINATOR_OPTION = '4';
+//     strcpy(m_xbee_settings.PANID, "3321");
+//     strcpy(m_xbee_settings.KEY, "6910DEA76FC0328DEBB4307854EDFC42");
+//     m_xbee_settings.ID = '1';
+//     m_xbee_settings.SECURITY = '1';
+
+
+}
+
+//___________________________________________________________________________
+ /*!
    \brief
 
    \param --
@@ -46,14 +71,16 @@ void CGlobale::IRQ_Serial_PC()
    _rs232_xbee_network_tx.putc(rxData);
 }
 
+/*
 void CGlobale::IRQ_Serial_XBEE()
 {
     char rxData;
    _led3 = !_led3;
    rxData = _rs232_xbee_network_rx.getc();
+   m_xbee.decode(rxData);
    _rs232_pc_tx.putc(rxData);
 }
-
+*/
 //___________________________________________________________________________
  /*!
    \brief Point d'entrée pour l'execution de toute l'application
@@ -79,8 +106,6 @@ void CGlobale::Run(void)
     //_rs232_pc_rx.attach(this, &CGlobale::IRQ_Serial_PC);  	// Callback sur réception d'une donnée sur la RS232
 
     _rs232_pc_rx.attach(this, &CGlobale::IRQ_Serial_PC);  	// Callback sur réception d'une donnée sur la RS232
-    //_rs232_xbee_network_rx.attach(this, &CGlobale::IRQ_Serial_XBEE);  	// Callback sur réception d'une donnée sur la RS232
-
 
   // Attends la montée de toutes les alimentation et l'initialisation de l'écran
   // Temps nécessaire en pratique pour que l'écran tactile ai fini de démarrer
@@ -90,29 +115,13 @@ void CGlobale::Run(void)
 
   // Lecture des paramètres EEPROM et recopie dans les données membres
   // de chaque classe en RAM
-  m_eeprom.Read();
-
+  readEEPROM();
 
   //m_LaBotBox.Start();
   m_messenger_xbee_ntw.start();
   wait(1);
 
-  //unsigned char buff[] = "+++";
-  //m_xbee.write(buff, 3);
-
-
-// XBEE n°1
-  tXbeeSettings xbee_settings;
-  xbee_settings.APIMODE = '1';
-  strcpy(xbee_settings.CHANNEL, "0E");
-  xbee_settings.COORDINATOR = '1';
-  xbee_settings.COORDINATOR_OPTION = '4';
-  strcpy(xbee_settings.PANID, "3321");
-  strcpy(xbee_settings.KEY, "6910DEA76FC0328DEBB4307854EDFC42");
-  xbee_settings.ID = '1';
-  xbee_settings.SECURITY = '1';
-
-  m_xbee.init(xbee_settings);
+//  m_messenger_xbee_ntw.m_xbee.init(m_xbee_settings);
 
   //_rs232_xbee_network_rx.puts("+++");
 /*
@@ -230,7 +239,9 @@ void CGlobale::SequenceurModeAutonome(void)
   cpt1sec++;
   if (cpt1sec >= TEMPO_1sec) {
   	cpt1sec = 0;
-
+    if (m_messenger_xbee_ntw.m_database.m_TimestampMatch.isNewMessage()) {
+        _rs232_pc_tx.printf("TimestampMatch message was received");
+    }
   }
 
 }
