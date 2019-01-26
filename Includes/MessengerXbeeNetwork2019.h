@@ -50,6 +50,8 @@ public:
     XbeeDriver m_xbee;
     //! Xbee settings
     tXbeeSettings m_xbee_settings;
+
+    void debug_settings();
 };
 
 #endif // _XBEE_NETWORK_MESSENGER_2019_H_

@@ -22,18 +22,14 @@ OBJECTS += Sources/MessengerXbeeNetwork2019.o
 OBJECTS += Sources/xbeedriver.o
 OBJECTS += Sources/RessoucesHardware.o
 OBJECTS += Sources/GlobalExperience.o
-OBJECTS += Sources/CEEPROM.o
+
 
 ###############################################################################
 # Objects and Paths for mbed-common
 INCLUDE_PATHS += -I../$(MBED_COMMON_ROB_PATH)
 INCLUDE_PATHS += -I../$(MBED_COMMON_ROB_PATH)/Includes
 
-#OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CEEPROM.o
-#OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CGlobale.o
-#OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CGlobale_ModeAutonome.o
-#OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CGlobale_ModePiloteLaBotBox.o
-#OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CGlobale_ModePiloteTerminal.o
+OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CEEPROM.o
 #OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CLaBotBox.o
 OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CLeds.o
 #OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CMoteurs.o

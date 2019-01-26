@@ -16,7 +16,7 @@
 */
 CGlobale::CGlobale() 
 {
-  ModeFonctionnement = MODE_AUTONOME;
+    ModeFonctionnement = MODE_AUTONOME;
 }
 
 //___________________________________________________________________________
@@ -28,32 +28,19 @@ CGlobale::CGlobale()
 */
 CGlobale::~CGlobale() 
 {
-
 }
 
 //___________________________________________________________________________
  /*!
-   \brief LEcture des paramètres EEPROM
+   \brief Lecture des paramètres EEPROM
 
    \param --
    \return --
 */
 void CGlobale::readEEPROM()
 {
-    bool state = m_eeprom.getValue("ModeFonctionnement", &Application.ModeFonctionnement);
-    _rs232_pc_tx.printf("[%d]:Mode fonctionnement = %d", state, Application.ModeFonctionnement);
-
-   // XBEE n°1
-//     m_xbee_settings.APIMODE = '1';
-//     strcpy(m_xbee_settings.CHANNEL, "0E");
-//     m_xbee_settings.COORDINATOR = '1';
-//     m_xbee_settings.COORDINATOR_OPTION = '4';
-//     strcpy(m_xbee_settings.PANID, "3321");
-//     strcpy(m_xbee_settings.KEY, "6910DEA76FC0328DEBB4307854EDFC42");
-//     m_xbee_settings.ID = '1';
-//     m_xbee_settings.SECURITY = '1';
-
-
+    m_eeprom.getValue("ModeFonctionnement", &Application.ModeFonctionnement);
+    //_rs232_pc_tx.printf("[%d]:Mode fonctionnement = %d", state, Application.ModeFonctionnement);
 }
 
 //___________________________________________________________________________
@@ -71,16 +58,6 @@ void CGlobale::IRQ_Serial_PC()
    _rs232_xbee_network_tx.putc(rxData);
 }
 
-/*
-void CGlobale::IRQ_Serial_XBEE()
-{
-    char rxData;
-   _led3 = !_led3;
-   rxData = _rs232_xbee_network_rx.getc();
-   m_xbee.decode(rxData);
-   _rs232_pc_tx.putc(rxData);
-}
-*/
 //___________________________________________________________________________
  /*!
    \brief Point d'entrée pour l'execution de toute l'application
@@ -119,30 +96,12 @@ void CGlobale::Run(void)
 
   //m_LaBotBox.Start();
   m_messenger_xbee_ntw.start();
-  wait(1);
-
-//  m_messenger_xbee_ntw.m_xbee.init(m_xbee_settings);
-
-  //_rs232_xbee_network_rx.puts("+++");
-/*
-XBEE n°2
-    tXbeeSettings xbee_settings;
-    xbee_settings.APIMODE = '1';
-    strcpy(xbee_settings.CHANNEL, "0E");
-    xbee_settings.COORDINATOR = '0'; // -------------
-    xbee_settings.COORDINATOR_OPTION = 0x04;
-    strcpy(xbee_settings.PANID, "3321");
-    strcpy(xbee_settings.KEY, "6910DEA76FC0328DEBB4307854EDFC42");
-    xbee_settings.ID = '2';  // ------
-    xbee_settings.SECURITY = '1';
-
- */
-
+  wait_ms(1000);
 
   periodicTick.attach(&Application, &CGlobale::IRQ_Tick_ModeAutonome, (float(PERIODE_TICK)/1000.0f));
 
   while(1) {
-      fflush(stdout); // ajout obligatoire ou un wait_us(1) sinon blocage de l'application
+      fflush(stdout); // ajout obligatoire ou un wait_us(1) ou fflush(stdout) sinon blocage de l'application
       if (Tick) {
           Tick = 0;
           SequenceurModeAutonome();
@@ -239,10 +198,10 @@ void CGlobale::SequenceurModeAutonome(void)
   cpt1sec++;
   if (cpt1sec >= TEMPO_1sec) {
   	cpt1sec = 0;
+    // test
     if (m_messenger_xbee_ntw.m_database.m_TimestampMatch.isNewMessage()) {
         _rs232_pc_tx.printf("TimestampMatch message was received");
     }
   }
-
 }
 
