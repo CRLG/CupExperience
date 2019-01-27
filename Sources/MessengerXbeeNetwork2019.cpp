@@ -64,11 +64,11 @@ void MessengerXbeeNetwork::start()
 {
     readEEPROM();
 
-    m_xbee.init(m_xbee_settings);
-
     m_database.restart();
     while (_rs232_xbee_network_rx.readable()) _rs232_xbee_network_rx.getc(); // Nettoie tout octet en attente dans le buffer
     _rs232_xbee_network_rx.attach(this, &MessengerXbeeNetwork::IRQ_ReceiveRS232);  	// Callback sur réception d'une donnée sur la RS232
+
+    m_xbee.init(m_xbee_settings);
 }
 // ______________________________________________
 void MessengerXbeeNetwork::stop()
@@ -79,6 +79,7 @@ void MessengerXbeeNetwork::stop()
 // ______________________________________________
 void MessengerXbeeNetwork::execute()
 {
+    // Test pour simuler le robot principal
     // RX messages
     if (m_database.m_ExperienceStatus.isNewMessage()) {
         Application.m_leds.toggle(LED_1);  // pour essayer
@@ -99,7 +100,7 @@ void MessengerXbeeNetwork::execute()
 void MessengerXbeeNetwork::encode(unsigned char *buff_data, unsigned short buff_size, unsigned short dest_address)
 {
     for (int i=0; i< buff_size; i++) {
-        _rs232_xbee_network_tx.putc(buff_data[i]);
+        m_xbee.encode(buff_data, buff_size, dest_address);
     }
 }
 

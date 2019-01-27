@@ -188,6 +188,10 @@ void CGlobale::SequenceurModeAutonome(void)
   if (cpt200msec >= TEMPO_200msec) {
   	cpt200msec = 0;
 
+    // test
+    if (m_messenger_xbee_ntw.m_database.m_TimestampMatch.isNewMessage()) {
+        _rs232_pc_tx.printf("TimestampMatch message was received : %d\n", m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp);
+    }
   }
   // ______________________________
   cpt500msec++;
@@ -198,10 +202,7 @@ void CGlobale::SequenceurModeAutonome(void)
   cpt1sec++;
   if (cpt1sec >= TEMPO_1sec) {
   	cpt1sec = 0;
-    // test
-    if (m_messenger_xbee_ntw.m_database.m_TimestampMatch.isNewMessage()) {
-        _rs232_pc_tx.printf("TimestampMatch message was received");
-    }
+    m_messenger_xbee_ntw.test_RX();
   }
 }
 
