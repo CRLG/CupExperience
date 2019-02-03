@@ -79,16 +79,9 @@ void MessengerXbeeNetwork::stop()
 // ______________________________________________
 void MessengerXbeeNetwork::execute()
 {
-    // Test pour simuler le robot principal
-    // RX messages
-    if (m_database.m_ExperienceStatus.isNewMessage()) {
-        Application.m_leds.toggle(LED_1);  // pour essayer
-        // ....
-    }
-    // TX messages
     int current_time = _Global_Timer.read_ms();
-    if (m_database.m_TimestampMatch.isTimeToSend(current_time)) {
-        m_database.m_TimestampMatch.Timestamp+= 10;
+
+    if (m_database.m_ExperienceStatus.isTimeToSend(current_time)) {
         m_database.m_TimestampMatch.send();
     }
 }

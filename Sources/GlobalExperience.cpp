@@ -98,6 +98,8 @@ void CGlobale::Run(void)
   m_messenger_xbee_ntw.start();
   wait_ms(1000);
 
+  _experience_state = EXPERIENCE_INIT;
+
   periodicTick.attach(&Application, &CGlobale::IRQ_Tick_ModeAutonome, (float(PERIODE_TICK)/1000.0f));
 
   while(1) {
@@ -169,7 +171,8 @@ void CGlobale::SequenceurModeAutonome(void)
   if (cpt50msec >= TEMPO_50msec) {
   	cpt50msec = 0;
 
-    // m_messenger_xbee_ntw.execute();
+    //m_messenger_xbee_ntw.execute();
+    stateflowExperience();
     m_leds.compute();
   }
 
@@ -178,7 +181,7 @@ void CGlobale::SequenceurModeAutonome(void)
   if (cpt100msec >= TEMPO_100msec) {
   	cpt100msec = 0;
   	
-  	if (once == 0) {
+    if (once == 0) {
 		m_leds.toggle(LED_1);
 	}
   }
@@ -202,7 +205,109 @@ void CGlobale::SequenceurModeAutonome(void)
   cpt1sec++;
   if (cpt1sec >= TEMPO_1sec) {
   	cpt1sec = 0;
-    m_messenger_xbee_ntw.test_RX();
+    //m_messenger_xbee_ntw.test_RX();
   }
 }
 
+
+//___________________________________________________________________________
+void CGlobale::stateflowExperience()
+{
+    switch(_experience_state)
+    {
+        // ________________________________________
+        case EXPERIENCE_INIT :
+            m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_WAITING_FOR_START;
+            commandMotor(0);
+            commandLight(0);
+
+            commandeLocalRGBLED(LED_BLUE, 0.01f);
+            _experience_state =EXPERIENCE_WAIT_START_EVENT;
+        break;
+        // ________________________________________
+        case EXPERIENCE_WAIT_START_EVENT :
+            commandeLocalRGBLED(LED_BLUE, 0.5f);
+            m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_WAITING_FOR_START;
+            if (    (m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp > 1)
+                //||  () // Condition appui sur le bouton d'activation manuel
+               )
+
+            {
+                _experience_state = EXPERIENCE_IN_PROGRESS;
+            }
+        break;
+        // ________________________________________
+        case EXPERIENCE_IN_PROGRESS :
+            commandeLocalRGBLED(LED_GREEN, 0.5f);
+            commandMotor(100); // TODO : voir pour un paramètre qui inverse le sens suivant la couleur de l'équipe
+            commandLight(100);
+            if (m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp == Message_TIMESTAMP_MATCH::MATCH_END) {
+                _experience_state = EXPERIENCE_FINISHED;
+            }
+            m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_IN_PROGRESS;
+        break;
+        // ________________________________________
+        case EXPERIENCE_FINISHED :
+            commandMotor(0); // Arrête le moteur mais laisse allumé l'affichage visuel
+            commandLight(100);
+            commandeLocalRGBLED(LED_GREEN, 1.0f);
+            m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_FINISHED;
+        break;
+        // ________________________________________
+        case EXPERIENCE_ERROR :
+            commandeLocalRGBLED(LED_RED, 1.0f);
+            m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_ERROR;
+        break;
+        // ________________________________________
+        default :
+            _experience_state = EXPERIENCE_INIT;
+        break;
+    }
+}
+
+
+//___________________________________________________________________________
+void CGlobale::commandMotor(char percent)
+{
+    // TODO
+    //      - Piloter le pont en H du moteur (gérer le sens)
+}
+
+
+//___________________________________________________________________________
+void CGlobale::commandLight(char state)
+{
+    // TODO
+}
+
+//___________________________________________________________________________
+// intensity : 0.0f -> 1.0f
+void CGlobale::commandeLocalRGBLED(char color, float intensity)
+{
+    switch(color)
+    {
+        case LED_OFF :
+            _local_rgb_led_R.write(1.0f);
+            _local_rgb_led_G.write(1.0f);
+            _local_rgb_led_B.write(1.0f);
+        break;
+
+        case LED_RED :
+            _local_rgb_led_R.write(1.0f - intensity);
+            _local_rgb_led_G.write(1.0f);
+            _local_rgb_led_B.write(1.0f);
+        break;
+
+        case LED_GREEN :
+            _local_rgb_led_R.write(1.0f);
+            _local_rgb_led_G.write(1.0f - intensity);
+            _local_rgb_led_B.write(1.0f);
+        break;
+
+        case LED_BLUE :
+            _local_rgb_led_R.write(1.0f);
+            _local_rgb_led_G.write(1.0f);
+            _local_rgb_led_B.write(1.0f - intensity);
+        break;
+    }
+}

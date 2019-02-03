@@ -12,6 +12,10 @@ extern DigitalOut _led2;
 extern DigitalOut _led3;
 extern DigitalOut _led4;
 
+extern PwmOut _local_rgb_led_R;
+extern PwmOut _local_rgb_led_G;
+extern PwmOut _local_rgb_led_B;
+
 extern DigitalIn _Etor1;
 extern DigitalIn _Etor2;
 extern DigitalIn _Etor3;

@@ -10,6 +10,11 @@ DigitalOut _led2(LED2);
 DigitalOut _led3(LED3);
 DigitalOut _led4(LED4);
 
+// __________________________________________________LED RGB sur carte
+PwmOut _local_rgb_led_R(p23);
+PwmOut _local_rgb_led_G(p24);
+PwmOut _local_rgb_led_B(p25);
+
 // __________________________________________________ENTREES TOUT OU RIEN
 DigitalIn  	_Etor1(p5);
 DigitalIn  	_Etor2(p6);

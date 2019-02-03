@@ -67,6 +67,28 @@ private :
     unsigned int Tick;
 
     void SequenceurModeAutonome();
+
+
+    void stateflowExperience();
+    typedef enum {
+        EXPERIENCE_INIT = 0,
+        EXPERIENCE_WAIT_START_EVENT,
+        EXPERIENCE_IN_PROGRESS,
+        EXPERIENCE_FINISHED,
+        EXPERIENCE_ERROR,
+    }tExperienceState;
+    unsigned short _experience_state;
+
+    void commandMotor(char percent);
+    void commandLight(char state);
+
+    typedef enum {
+        LED_OFF = 0,
+        LED_RED,
+        LED_GREEN,
+        LED_BLUE
+    }tLocalColorLed;
+    void commandeLocalRGBLED(char color, float intensity);
 };
 
 
