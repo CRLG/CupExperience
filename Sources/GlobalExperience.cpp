@@ -99,6 +99,7 @@ void CGlobale::Run(void)
   wait_ms(1000);
 
   _experience_state = EXPERIENCE_INIT;
+  m_messenger_xbee_ntw.m_database.m_ExperienceStatus.setTransmitPeriod(1000);
 
   periodicTick.attach(&Application, &CGlobale::IRQ_Tick_ModeAutonome, (float(PERIODE_TICK)/1000.0f));
 
@@ -171,7 +172,7 @@ void CGlobale::SequenceurModeAutonome(void)
   if (cpt50msec >= TEMPO_50msec) {
   	cpt50msec = 0;
 
-    //m_messenger_xbee_ntw.execute();
+    m_messenger_xbee_ntw.execute();
     stateflowExperience();
     m_leds.compute();
   }

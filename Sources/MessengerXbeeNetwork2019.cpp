@@ -83,7 +83,8 @@ void MessengerXbeeNetwork::execute()
     int current_time = _Global_Timer.read_ms();
 
     if (m_database.m_ExperienceStatus.isTimeToSend(current_time)) {
-        m_database.m_TimestampMatch.send();
+        m_database.m_ExperienceStatus.setDestinationAddress(0xFFFF);
+        m_database.m_ExperienceStatus.send();
     }
 }
 
@@ -93,9 +94,7 @@ void MessengerXbeeNetwork::execute()
 // ______________________________________________
 void MessengerXbeeNetwork::encode(unsigned char *buff_data, unsigned short buff_size, unsigned short dest_address)
 {
-    for (int i=0; i< buff_size; i++) {
-        m_xbee.encode(buff_data, buff_size, dest_address);
-    }
+    m_xbee.encode(buff_data, buff_size, dest_address);
 }
 
 // ===================================================
