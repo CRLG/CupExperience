@@ -69,6 +69,7 @@ void MessengerXbeeNetwork::start()
     _rs232_xbee_network_rx.attach(this, &MessengerXbeeNetwork::IRQ_ReceiveRS232);  	// Callback sur réception d'une donnée sur la RS232
 
     m_xbee.init(m_xbee_settings);
+    m_xbee.setMessengerInterface(this);
 }
 // ______________________________________________
 void MessengerXbeeNetwork::stop()
