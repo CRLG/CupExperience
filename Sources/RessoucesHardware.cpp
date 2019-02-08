@@ -39,8 +39,8 @@ AnalogIn   _Eana5(p20);
 
 
 // __________________________________________________SORTIES PWM
-//PwmOut _Mot1_PWM (p21);
-//PwmOut _Mot2_PWM (p24);
+PwmOut _Mot_PWM (p21);
+PwmOut _LED_PWM (p22);
 
 
 // __________________________________________________ TIMERS

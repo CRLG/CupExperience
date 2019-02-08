@@ -41,6 +41,9 @@ extern Serial _rs232_pc_rx;
 extern Serial _rs232_xbee_network_tx;
 extern Serial _rs232_xbee_network_rx;
 extern LocalFileSystem local;
+
+extern PwmOut _Mot_PWM;
+extern PwmOut _LED_PWM;
 #endif
 
 

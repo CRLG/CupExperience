@@ -228,7 +228,8 @@ void CGlobale::stateflowExperience()
         // ________________________________________
         case EXPERIENCE_WAIT_START_EVENT :
             commandeLocalRGBLED(LED_BLUE, 0.5f);
-            m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_WAITING_FOR_START;
+//            m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_WAITING_FOR_START;
+            m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus++; // pour les tests uniquement
             if (    (m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp > 1)
                 //||  () // Condition appui sur le bouton d'activation manuel
                )
@@ -270,15 +271,14 @@ void CGlobale::stateflowExperience()
 //___________________________________________________________________________
 void CGlobale::commandMotor(char percent)
 {
-    // TODO
-    //      - Piloter le pont en H du moteur (gérer le sens)
+    _Mot_PWM.write(percent/100.0);
 }
 
 
 //___________________________________________________________________________
-void CGlobale::commandLight(char state)
+void CGlobale::commandLight(char percent)
 {
-    // TODO
+    _LED_PWM.write(percent/100.0);
 }
 
 //___________________________________________________________________________

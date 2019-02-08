@@ -80,7 +80,7 @@ private :
     unsigned short _experience_state;
 
     void commandMotor(char percent);
-    void commandLight(char state);
+    void commandLight(char percent);
 
     typedef enum {
         LED_OFF = 0,
