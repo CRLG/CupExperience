@@ -44,6 +44,8 @@ extern LocalFileSystem local;
 
 extern PwmOut _Mot_PWM;
 extern PwmOut _LED_PWM;
+
+extern DigitalIn  _Estart;
 #endif
 
 

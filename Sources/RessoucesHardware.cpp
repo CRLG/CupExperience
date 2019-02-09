@@ -30,7 +30,7 @@ DigitalIn  	_Etor_xbee_status(p29);	//  l'application n'a pas besoin du bus CAN
 AnalogIn   _Mes_Vbat(p15);
 AnalogIn   _Eana1(p16);
 AnalogIn   _Eana2(p17);
-AnalogIn   _Eana3(p18);
+DigitalIn  _Estart(p18);
 AnalogIn   _Eana4(p19);
 AnalogIn   _Eana5(p20);
 

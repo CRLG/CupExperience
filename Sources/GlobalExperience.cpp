@@ -17,6 +17,7 @@
 CGlobale::CGlobale() 
 {
     ModeFonctionnement = MODE_AUTONOME;
+    _Estart.mode(PullUp);
 }
 
 //___________________________________________________________________________
@@ -228,12 +229,11 @@ void CGlobale::stateflowExperience()
         // ________________________________________
         case EXPERIENCE_WAIT_START_EVENT :
             commandeLocalRGBLED(LED_BLUE, 0.5f);
-//            m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_WAITING_FOR_START;
-            m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus++; // pour les tests uniquement
+            m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_WAITING_FOR_START;
+//            m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus++; // pour les tests uniquement
             if (    (m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp > 1)
-                //||  () // Condition appui sur le bouton d'activation manuel
+                 || (_Estart.read() == 0) // Condition appui sur le bouton d'activation manuel
                )
-
             {
                 _experience_state = EXPERIENCE_IN_PROGRESS;
             }
