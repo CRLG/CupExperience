@@ -4,6 +4,3 @@
 [submodule "ext/CppRobLib"]
 	path = ext/CppRobLib
 	url = https://github.com/CRLG/CppRobLib.git
-[submodule "ext/mbed-common-rob"]
-	path = ext/mbed-common-rob
-	url = https://github.com/NicoFarmer/mbed-common-rob.git
