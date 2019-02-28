@@ -17,7 +17,6 @@
 CGlobale::CGlobale() 
 {
     ModeFonctionnement = MODE_AUTONOME;
-    _Estart.mode(PullUp);
 }
 
 //___________________________________________________________________________
@@ -68,6 +67,8 @@ void CGlobale::IRQ_Serial_PC()
 */
 void CGlobale::Run(void)
 {
+    _Estart.mode(PullUp);
+
     // Initialise la vitesse de transmission avec le PC
     _rs232_pc_tx.baud(9600);
     _rs232_pc_tx.format(8, Serial::None, 1);   	// 8 bits de données / Pas de parité / 1 bit de stop
