@@ -221,6 +221,7 @@ void CGlobale::stateflowExperience()
         // ________________________________________
         case EXPERIENCE_INIT :
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_WAITING_FOR_START;
+            m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp = 0;
             commandMotor(0);
             commandLight(0);
 
@@ -242,7 +243,7 @@ void CGlobale::stateflowExperience()
         // ________________________________________
         case EXPERIENCE_IN_PROGRESS :
             commandeLocalRGBLED(LED_GREEN, 0.5f);
-            commandMotor(100); // TODO : voir pour un paramètre qui inverse le sens suivant la couleur de l'équipe
+            commandMotor(50); // TODO : voir pour un paramètre qui inverse le sens suivant la couleur de l'équipe
             commandLight(100);
             if (m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp == Message_TIMESTAMP_MATCH::MATCH_END) {
                 _experience_state = EXPERIENCE_FINISHED;
@@ -270,15 +271,39 @@ void CGlobale::stateflowExperience()
 
 
 //___________________________________________________________________________
-void CGlobale::commandMotor(char percent)
+void CGlobale::commandMotor(float percent)
 {
+    if (percent > 0) {
+        _Mot_Sens1 = 1;
+        _Mot_Sens2 = 0;
+    }
+    else if (percent < 0) {
+        _Mot_Sens1 = 0;
+        _Mot_Sens2 = 1;
+    }
+    else { // PWM = 0 : pont en H en court-circuit
+        _Mot_Sens1 = 1;
+        _Mot_Sens2 = 1;
+    }
     _Mot_PWM.write(percent/100.0);
 }
 
 
 //___________________________________________________________________________
-void CGlobale::commandLight(char percent)
+void CGlobale::commandLight(float percent)
 {
+    if (percent > 0) {
+        _LED_Sens1 = 0;
+        _LED_Sens2 = 1;
+    }
+    else if (percent < 0) {
+        _LED_Sens1 = 1;
+        _LED_Sens2 = 0;
+    }
+    else { // PWM = 0 : pont en H en court-circuit
+        _LED_Sens1 = 1;
+        _LED_Sens2 = 1;
+    }
     _LED_PWM.write(percent/100.0);
 }
 

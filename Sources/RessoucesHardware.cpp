@@ -35,8 +35,11 @@ AnalogIn   _Eana4(p19);
 AnalogIn   _Eana5(p20);
 
 // __________________________________________________SORTIES TOUT OU RIEN
-//DigitalOut 	_Mot1_Sens1(p22);
+DigitalOut 	_Mot_Sens1(p20);
+DigitalOut 	_Mot_Sens2(p19);
 
+DigitalOut 	_LED_Sens1(p18);    // Les LED sont aussi pilotées par un pont en H qui nécessite des entrées IN1 et IN2 pour sélectrionner le sens
+DigitalOut 	_LED_Sens2(p17);
 
 // __________________________________________________SORTIES PWM
 PwmOut _Mot_PWM (p21);

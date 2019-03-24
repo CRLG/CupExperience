@@ -79,8 +79,8 @@ private :
     }tExperienceState;
     unsigned short _experience_state;
 
-    void commandMotor(char percent);
-    void commandLight(char percent);
+    void commandMotor(float percent);
+    void commandLight(float percent);
 
     typedef enum {
         LED_OFF = 0,

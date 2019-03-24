@@ -45,6 +45,13 @@ extern LocalFileSystem local;
 extern PwmOut _Mot_PWM;
 extern PwmOut _LED_PWM;
 
+
+extern DigitalOut   _Mot_Sens1;
+extern DigitalOut   _Mot_Sens2;
+
+extern DigitalOut   _LED_Sens1;
+extern DigitalOut   _LED_Sens2;
+
 extern DigitalIn  _Estart;
 #endif
 
