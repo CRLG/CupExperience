@@ -29,7 +29,9 @@ typedef enum {
 #define TEMPO_10sec		(10000/PERIODE_TICK) 
 #define TEMPO_15sec		(15000/PERIODE_TICK) 
 
+#define DUREE_PILOTAGE_MOTEUR_NOMINAL   100 // [secondes]
 
+#define PERIODE_APPEL_STATEFLOW_EXPERIENCE  0.05
 
 // -----------------------------
 //! Classe de gestion des options d'exécution passees en ligne de commande
@@ -37,6 +39,9 @@ class CGlobale {
 public :
     //! Le mode de fonctionnement (autonome ou piloté via Anaconbot)
     unsigned int ModeFonctionnement;
+
+    unsigned int m_duree_pilotage_moteur;   // [sec]
+    float m_cpt_temps_pilotage_moteur;      // [sec]
 
     //! La gestion d'Anaconbot
     //CLaBotBox m_LaBotBox;

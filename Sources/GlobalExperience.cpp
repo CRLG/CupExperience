@@ -17,6 +17,7 @@
 CGlobale::CGlobale() 
 {
     ModeFonctionnement = MODE_AUTONOME;
+    m_duree_pilotage_moteur = DUREE_PILOTAGE_MOTEUR_NOMINAL;
 }
 
 //___________________________________________________________________________
@@ -40,6 +41,8 @@ CGlobale::~CGlobale()
 void CGlobale::readEEPROM()
 {
     m_eeprom.getValue("ModeFonctionnement", &Application.ModeFonctionnement);
+    m_eeprom.getValue("DureePilotageMoteur", &Application.m_duree_pilotage_moteur);
+
     //_rs232_pc_tx.printf("[%d]:Mode fonctionnement = %d", state, Application.ModeFonctionnement);
 }
 
@@ -238,6 +241,7 @@ void CGlobale::stateflowExperience()
                )
             {
                 _experience_state = EXPERIENCE_IN_PROGRESS;
+                m_cpt_temps_pilotage_moteur = 0;
             }
         break;
         // ________________________________________
@@ -248,7 +252,12 @@ void CGlobale::stateflowExperience()
             if (m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp == Message_TIMESTAMP_MATCH::MATCH_END) {
                 _experience_state = EXPERIENCE_FINISHED;
             }
+            // arrêt automatique du moteur au bout d'un certain temps
+            if (m_cpt_temps_pilotage_moteur >= m_duree_pilotage_moteur) {
+                _experience_state = EXPERIENCE_FINISHED;
+            }
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_IN_PROGRESS;
+            m_cpt_temps_pilotage_moteur += PERIODE_APPEL_STATEFLOW_EXPERIENCE;
         break;
         // ________________________________________
         case EXPERIENCE_FINISHED :
