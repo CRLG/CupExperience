@@ -22,6 +22,7 @@ OBJECTS += Sources/MessengerXbeeNetwork2019.o
 OBJECTS += Sources/xbeedriver.o
 OBJECTS += Sources/RessoucesHardware.o
 OBJECTS += Sources/GlobalExperience.o
+OBJECTS += Sources/led.o
 
 
 ###############################################################################

@@ -8,6 +8,7 @@
 #include "CEEPROM.h"
 #include "MessengerXbeeNetwork2019.h"
 #include "xbeedriver.h"
+#include "led.h"
 
 typedef enum {
 	MODE_AUTONOME = 0,
@@ -31,8 +32,12 @@ typedef enum {
 
 #define DUREE_PILOTAGE_MOTEUR_NOMINAL   100 // [secondes]
 
-#define PERIODE_APPEL_STATEFLOW_EXPERIENCE  0.05
+#define PERIODE_APPEL_STATEFLOW_EXPERIENCE  0.05 // [sec]
+#define PERIODE_APPEL_GESTION_LED 0.05 // [sec]
+#define PERIODE_APPEL_GESTION_TELEMETRE  0.05 // [sec]
 
+#define SEUIL_DETECTION_DEPART_SECOURS_NOMINAL 40 // [cm]
+#define TEMPS_CONFIRMATION_DEPART_SECOURS_NOMINAL 0.5 // [sec]
 // -----------------------------
 //! Classe de gestion des options d'exécution passees en ligne de commande
 class CGlobale {
@@ -47,10 +52,26 @@ public :
     //CLaBotBox m_LaBotBox;
     //! Le gestionnaire d'EEPROM
     CEEPROM m_eeprom;
-    //! La gestion des Led
-    CLeds m_leds;
+    //! La gestion des Led MBED
+    CLeds m_leds_mbed;
+    //! Bandeau de LED
+    Led m_led_experience;
     //! Network
     MessengerXbeeNetwork m_messenger_xbee_ntw;
+    unsigned int m_cpt_perte_com_xbee_grobot;
+    bool m_xbee_grosbot_present;
+
+    //! Départ de secours
+    //! (VCC_capteur/512) -> 2.54cm
+    //! VCC_capteur = 3.3V sur l'expérience
+    //! 2.54/(3/512) = 394.085
+    //! DistanceTelemetre [cm] = ConversionAnalogiqueNormalise * COEF_TELEMETRE_ULTRASON
+#define COEF_TELEMETRE_ULTRASON (3.3 * 394.085)   // *3.3 pour tenir compte dufait que le résultat de la conversion analogique est normalisé entre 0.0 et 1.0
+    float m_distance_telemetre;
+    float m_cpt_filtrage_telemetre;
+    float m_temps_confirmation_depart_secours;
+    unsigned int m_seuil_detection_depart_secours;
+    bool m_ordre_depart_secours;
 
     CGlobale();
     ~CGlobale();
@@ -85,15 +106,18 @@ private :
     unsigned short _experience_state;
 
     void commandMotor(float percent);
-    void commandLight(float percent);
 
     typedef enum {
         LED_OFF = 0,
         LED_RED,
         LED_GREEN,
-        LED_BLUE
+        LED_BLUE,
+        LED_PURPLE
     }tLocalColorLed;
-    void commandeLocalRGBLED(char color, float intensity);
+    void commandeLocalRGBLED(char color, float intensity, bool blink=false);
+
+    void traitementTelemetre();
+
 };
 
 

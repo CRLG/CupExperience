@@ -28,10 +28,10 @@ extern DigitalIn _Etor_xbee_status;
 
 extern AnalogIn _Mes_Vbat;
 extern AnalogIn _Eana1;
-extern AnalogIn _Eana2;
-extern AnalogIn _Eana3;
-extern AnalogIn _Eana4;
-extern AnalogIn _Eana5;
+//extern AnalogIn _Eana2;
+//extern AnalogIn _Eana3;
+//extern AnalogIn _Eana4;
+//extern AnalogIn _Eana5;
 
 extern Ticker periodicTick;
 extern Timer  _Global_Timer;
@@ -52,7 +52,7 @@ extern DigitalOut   _Mot_Sens2;
 extern DigitalOut   _LED_Sens1;
 extern DigitalOut   _LED_Sens2;
 
-extern DigitalIn  _Estart;
+//extern DigitalIn  _Estart;
 #endif
 
 
