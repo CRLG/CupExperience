@@ -21,6 +21,7 @@ CGlobale::CGlobale()
     m_seuil_detection_depart_secours = SEUIL_DETECTION_DEPART_SECOURS_NOMINAL;
     m_temps_confirmation_depart_secours = TEMPS_CONFIRMATION_DEPART_SECOURS_NOMINAL;
     m_cpt_filtrage_telemetre = 0;
+    m_pwm_moteur_on = 50.0f;
 
     m_cpt_perte_com_xbee_grobot = 0xFFFF;   // Par défaut, pas de communication
 }
@@ -49,12 +50,14 @@ void CGlobale::readEEPROM()
     m_eeprom.getValue("DureePilotageMoteur", &Application.m_duree_pilotage_moteur);
     m_eeprom.getValue("TempsConfirmationDepartSecours", &Application.m_temps_confirmation_depart_secours);
     m_eeprom.getValue("SeuilDetectionDepartSecours", &Application.m_seuil_detection_depart_secours);
+    m_eeprom.getValue("PwmMoteurOn", &Application.m_pwm_moteur_on);
 
     _rs232_pc_tx.printf("- EEPROM -\n\r");
     _rs232_pc_tx.printf("   > ModeFonctionnement = %d\n\r", Application.ModeFonctionnement);
     _rs232_pc_tx.printf("   > DureePilotageMoteur = %d\n\r", Application.m_duree_pilotage_moteur);
     _rs232_pc_tx.printf("   > TempsConfirmationDepartSecours = %f\n\r", Application.m_temps_confirmation_depart_secours);
     _rs232_pc_tx.printf("   > SeuilDetectionDepartSecours = %d\n\r", Application.m_seuil_detection_depart_secours);
+    _rs232_pc_tx.printf("   > PwmMoteurOn = %f\n\r", Application.m_pwm_moteur_on);
 }
 
 
@@ -290,7 +293,7 @@ void CGlobale::stateflowExperience()
         // ________________________________________
         case EXPERIENCE_IN_PROGRESS :
             commandeLocalRGBLED(LED_BLUE, 0.5f, cligno_led);
-            commandMotor(50); // TODO : voir pour un paramètre qui inverse le sens suivant la couleur de l'équipe
+            commandMotor(m_pwm_moteur_on);
             m_led_experience.setState(true);
             if (m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp == Message_TIMESTAMP_MATCH::MATCH_END) {
                 _experience_state = EXPERIENCE_FINISHED;

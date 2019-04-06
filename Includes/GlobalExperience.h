@@ -72,6 +72,7 @@ public :
     float m_temps_confirmation_depart_secours;
     unsigned int m_seuil_detection_depart_secours;
     bool m_ordre_depart_secours;
+    float m_pwm_moteur_on;
 
     CGlobale();
     ~CGlobale();
