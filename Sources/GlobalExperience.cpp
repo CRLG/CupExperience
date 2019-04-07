@@ -22,6 +22,9 @@ CGlobale::CGlobale()
     m_temps_confirmation_depart_secours = TEMPS_CONFIRMATION_DEPART_SECOURS_NOMINAL;
     m_cpt_filtrage_telemetre = 0;
     m_pwm_moteur_on = 50.0f;
+    m_pwm_min_bandeau_led = 50.0f;
+    m_bandeau_led_speed_up = 1;
+    m_bandeau_led_speed_down = 3;
 
     m_cpt_perte_com_xbee_grobot = 0xFFFF;   // Par défaut, pas de communication
 }
@@ -51,6 +54,9 @@ void CGlobale::readEEPROM()
     m_eeprom.getValue("TempsConfirmationDepartSecours", &Application.m_temps_confirmation_depart_secours);
     m_eeprom.getValue("SeuilDetectionDepartSecours", &Application.m_seuil_detection_depart_secours);
     m_eeprom.getValue("PwmMoteurOn", &Application.m_pwm_moteur_on);
+    m_eeprom.getValue("PwmMinBandeauLed", &Application.m_pwm_min_bandeau_led);
+    m_eeprom.getValue("BandeauLedSpeedUp", &Application.m_bandeau_led_speed_up);
+    m_eeprom.getValue("BandeauLedSpeedDown", &Application.m_bandeau_led_speed_down);
 
     _rs232_pc_tx.printf("- EEPROM -\n\r");
     _rs232_pc_tx.printf("   > ModeFonctionnement = %d\n\r", Application.ModeFonctionnement);
@@ -58,6 +64,9 @@ void CGlobale::readEEPROM()
     _rs232_pc_tx.printf("   > TempsConfirmationDepartSecours = %f\n\r", Application.m_temps_confirmation_depart_secours);
     _rs232_pc_tx.printf("   > SeuilDetectionDepartSecours = %d\n\r", Application.m_seuil_detection_depart_secours);
     _rs232_pc_tx.printf("   > PwmMoteurOn = %f\n\r", Application.m_pwm_moteur_on);
+    _rs232_pc_tx.printf("   > PwmMinBandeauLed = %f\n\r", Application.m_pwm_min_bandeau_led);
+    _rs232_pc_tx.printf("   > BandeauLedSpeedUp = %f\n\r", Application.m_bandeau_led_speed_up);
+    _rs232_pc_tx.printf("   > BandeauLedSpeedDown = %f\n\r", Application.m_bandeau_led_speed_down);
 }
 
 
@@ -116,7 +125,8 @@ void CGlobale::Run(void)
   m_messenger_xbee_ntw.start();
   wait_ms(1000);
 
-  _experience_state = EXPERIENCE_INIT;
+  m_experience_state = EXPERIENCE_INIT;
+  m_experience_state_old = m_experience_state + 1;  //+1 pour que les 2 n'aient pas la même valeur
   m_messenger_xbee_ntw.m_database.m_ExperienceStatus.setTransmitPeriod(1000);
 
   periodicTick.attach(&Application, &CGlobale::IRQ_Tick_ModeAutonome, (float(PERIODE_TICK)/1000.0f));
@@ -181,6 +191,7 @@ void CGlobale::SequenceurModeAutonome(void)
   if (cpt20msec >= TEMPO_20msec) {
 	cpt20msec = 0;
 
+    m_bandeau_led_experience.compute();
     m_leds_mbed.setState(LED_4, _Etor_xbee_status);
  }
 
@@ -194,7 +205,6 @@ void CGlobale::SequenceurModeAutonome(void)
     traitementTelemetre();
     stateflowExperience();
     m_leds_mbed.compute();
-    m_led_experience.compute();
   }
 
   // ______________________________
@@ -266,17 +276,20 @@ void CGlobale::traitementTelemetre()
 void CGlobale::stateflowExperience()
 {
     bool cligno_led = !m_xbee_grosbot_present;
-    switch(_experience_state)
+    bool entry_state = (m_experience_state != m_experience_state_old);
+    m_experience_state_old = m_experience_state;
+
+    switch(m_experience_state)
     {
         // ________________________________________
         case EXPERIENCE_INIT :
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_WAITING_FOR_START;
             m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp = 0;
             commandMotor(0);
-            m_led_experience.setState(false);
+            m_bandeau_led_experience.setState(false);
 
             commandeLocalRGBLED(LED_PURPLE, 0.01f);
-            _experience_state =EXPERIENCE_WAIT_START_EVENT;
+            m_experience_state =EXPERIENCE_WAIT_START_EVENT;
         break;
         // ________________________________________
         case EXPERIENCE_WAIT_START_EVENT :
@@ -286,7 +299,7 @@ void CGlobale::stateflowExperience()
                  || (m_ordre_depart_secours) // Condition de départ de secours
                )
             {
-                _experience_state = EXPERIENCE_IN_PROGRESS;
+                m_experience_state = EXPERIENCE_IN_PROGRESS;
                 m_cpt_temps_pilotage_moteur = 0;
             }
         break;
@@ -294,13 +307,16 @@ void CGlobale::stateflowExperience()
         case EXPERIENCE_IN_PROGRESS :
             commandeLocalRGBLED(LED_BLUE, 0.5f, cligno_led);
             commandMotor(m_pwm_moteur_on);
-            m_led_experience.setState(true);
+            if (entry_state) {
+                m_bandeau_led_experience.setRampUpDownMode(m_pwm_min_bandeau_led, 100., m_bandeau_led_speed_up, m_bandeau_led_speed_down);
+                _rs232_pc_tx.printf("!!!!!! EXPERIENCE_IN_PROGRESS !!!!!! \n\r");
+            }
             if (m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp == Message_TIMESTAMP_MATCH::MATCH_END) {
-                _experience_state = EXPERIENCE_FINISHED;
+                m_experience_state = EXPERIENCE_FINISHED;
             }
             // arrêt automatique du moteur au bout d'un certain temps
             if (m_cpt_temps_pilotage_moteur >= m_duree_pilotage_moteur) {
-                _experience_state = EXPERIENCE_FINISHED;
+                m_experience_state = EXPERIENCE_FINISHED;
             }
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_IN_PROGRESS;
             m_cpt_temps_pilotage_moteur += PERIODE_APPEL_STATEFLOW_EXPERIENCE;
@@ -308,7 +324,7 @@ void CGlobale::stateflowExperience()
         // ________________________________________
         case EXPERIENCE_FINISHED :
             commandMotor(0); // Arrête le moteur mais laisse allumé l'affichage visuel
-            m_led_experience.setState(true);
+            m_bandeau_led_experience.setState(true);
             commandeLocalRGBLED(LED_GREEN, 1.0f, cligno_led);
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_FINISHED;
         break;
@@ -319,7 +335,7 @@ void CGlobale::stateflowExperience()
         break;
         // ________________________________________
         default :
-            _experience_state = EXPERIENCE_INIT;
+            m_experience_state = EXPERIENCE_INIT;
         break;
     }
 }

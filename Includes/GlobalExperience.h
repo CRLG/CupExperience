@@ -55,7 +55,7 @@ public :
     //! La gestion des Led MBED
     CLeds m_leds_mbed;
     //! Bandeau de LED
-    Led m_led_experience;
+    Led m_bandeau_led_experience;
     //! Network
     MessengerXbeeNetwork m_messenger_xbee_ntw;
     unsigned int m_cpt_perte_com_xbee_grobot;
@@ -73,6 +73,9 @@ public :
     unsigned int m_seuil_detection_depart_secours;
     bool m_ordre_depart_secours;
     float m_pwm_moteur_on;
+    float m_pwm_min_bandeau_led;
+    float m_bandeau_led_speed_up;
+    float m_bandeau_led_speed_down;
 
     CGlobale();
     ~CGlobale();
@@ -104,7 +107,8 @@ private :
         EXPERIENCE_FINISHED,
         EXPERIENCE_ERROR,
     }tExperienceState;
-    unsigned short _experience_state;
+    unsigned short m_experience_state;
+    unsigned short m_experience_state_old;
 
     void commandMotor(float percent);
 

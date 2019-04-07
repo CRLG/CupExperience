@@ -11,6 +11,7 @@
 Led::Led()
 {
     m_mode = LEDMODE_MANUAL;
+    m_mode_old = (tLedMode)(LEDMODE_MANUAL + 1); // Pour être certain que les 2 n'ont pas la même valeur au départ
 }
 
 Led::~Led()
@@ -35,7 +36,7 @@ void Led::setState(bool state)
 */
 void Led::toggle()
 {
-    if (m_current_percent > 50) {
+    if (m_current_pwm > 50) {
         setState(0.0);
     }
     else {
@@ -50,7 +51,7 @@ void Led::toggle()
 */
 float Led::read()
 {
-    return m_current_percent;
+    return m_current_pwm;
 }
 
 //___________________________________________________________________________
@@ -76,15 +77,19 @@ void Led::setPulseMode(unsigned short on_duration, unsigned short off_duration, 
 //___________________________________________________________________________
  /*!
    \brief Passe la LED en mode rampe montante/descendante PWM
-   \param on_duration : la durée pour atteindre
-   \param off_duration : la durée à l'état OFF de la LED [msec]
-   \param num_cycle : le nombre d'impulsions à jouer (INFINIT = indéfiniement)
+   \param pwm_min : valeur minimum du PWM (bas de la rampe)
+   \param pwm_max : valeur maximum du PWM (haut de la rampe)
+   \param speed_up : vitesse d'évolution de la rampe positive en [%]
+   \param speed_down : vitesse d'évolution de la rampe négative en [%]
    \return --
 */
-void Led::setUpDownMode()
+void Led::setRampUpDownMode(float pwm_min, float pwm_max, unsigned short speed_up, unsigned short speed_down)
 {
-    m_mode = LEDMODE_UP_DOWN;
-    m_time = 0;
+    m_mode = LEDMODE_RAMP_UP_DOWN;
+    m_ramp_min_pwm = pwm_min;
+    m_ramp_max_pwm = pwm_max;
+    m_ramp_speed_up = speed_up;
+    m_ramp_speed_down = speed_down;
 }
 
 //___________________________________________________________________________
@@ -93,7 +98,7 @@ void Led::setUpDownMode()
    \param percent : la valeur du pourcentage
    \return --
 */
-void Led::setPWM(signed char percent)
+void Led::setPWM(float percent)
 {
     _setPWM(percent);
     m_mode = LEDMODE_MANUAL;
@@ -105,7 +110,7 @@ void Led::setPWM(signed char percent)
    \param percent : la valeur du pourcentage
    \return --
 */
-void Led::_setPWM(signed char percent)
+void Led::_setPWM(float percent)
 {
     if (percent > 0) {
         _LED_Sens1 = 0;
@@ -120,7 +125,8 @@ void Led::_setPWM(signed char percent)
         _LED_Sens2 = 1;
     }
     _LED_PWM.write(percent/100.0);
-    m_current_percent = percent;
+    m_current_pwm = percent;
+    //_rs232_pc_tx.printf("%f %\n\r", m_current_pwm);
 }
 
 //___________________________________________________________________________
@@ -132,34 +138,64 @@ void Led::_setPWM(signed char percent)
 */
 void Led::compute()
 {
+    bool entry_mode = (m_mode != m_mode_old);
+
     switch(m_mode)
     {
         // ________________________________________________
         case LEDMODE_PULSE :
             //   |-------------|__________________________|-------------|___________
             //   < on_duration ><       off_duration      >
-            if (m_time < m_on_duration) _setPWM(100);
-            else _setPWM(0);
+            if (entry_mode) {
+                m_time = 0;
+            }
+            if (m_time < m_on_duration) _setPWM(100.);
+            else _setPWM(0.);
             if (m_time >= (m_on_duration + m_off_duration)) {
                 if (m_num_cycle != INFINITE) m_count++;
                 if (m_count >= m_num_cycle) {
-                    setPWM(0);  // repasse en mode manuel LED éteinte
+                    setPWM(0.);  // repasse en mode manuel LED éteinte
                 }
                 else {  // Recommence un cycle
                     m_time = 0;
                 }
             }
             else {
-                m_time += LED_REFRESH_PERIOD;
+                m_time += BANDEAU_LED_REFRESH_PERIOD;
             }
         break;
         // ________________________________________________
-        case LEDMODE_UP_DOWN :
-
+        case LEDMODE_RAMP_UP_DOWN :
+            if (entry_mode) {
+                m_current_pwm = m_ramp_min_pwm;
+                m_ramp_direction = 1;
+            }
+            else {
+                // Augmentation de la luminosité (rampe positive)
+                if (m_ramp_direction >= 0) {
+                    m_current_pwm += m_ramp_speed_up;
+                    if (m_current_pwm >= m_ramp_max_pwm) {
+                        m_current_pwm = m_ramp_max_pwm;
+                        m_ramp_direction = -1; // change le sens de la rampe
+                    }
+                }
+                // Diminution de la luminosité (rampe négative)
+                else {
+                    m_current_pwm -= m_ramp_speed_down;
+                    if (m_current_pwm <= m_ramp_min_pwm) {
+                        m_current_pwm = m_ramp_min_pwm;
+                        m_ramp_direction = 1; // change le sens de la rampe
+                    }
+                }
+            }
+            _setPWM(m_current_pwm);
         break;
         // ________________________________________________
         default :
             // ne rien faire
         break;
     }
+    // old = new
+    m_mode_old = m_mode;
 }
+

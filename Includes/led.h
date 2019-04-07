@@ -8,7 +8,7 @@
 #include "RessourcesHardware.h"
 
 // Dans ce module, toutes les durées sont en [msec]
-#define LED_REFRESH_PERIOD 50 // msec : période d'appel de la fonction compute depuis le séquenceur
+#define BANDEAU_LED_REFRESH_PERIOD 20 // msec : période d'appel de la fonction compute depuis le séquenceur
 
 // ============================================================
 //        Gestion d'une LED
@@ -19,7 +19,7 @@ class Led
     typedef enum {
         LEDMODE_MANUAL = 0,
         LEDMODE_PULSE,
-        LEDMODE_UP_DOWN
+        LEDMODE_RAMP_UP_DOWN
     }tLedMode;
 
 #define INFINITE (unsigned short)0xFFFFFFFF
@@ -30,16 +30,17 @@ public :
     void compute();
     // API
     void setState(bool state);
-    void setPWM(signed char percent);
-    void _setPWM(signed char percent);
+    void setPWM(float percent);
+    void _setPWM(float percent);
     void toggle();
     float read();
     void setPulseMode(unsigned short on_duration=500, unsigned short off_duration=500, unsigned short num_cycle=INFINITE);
-    void setUpDownMode();
+    void setRampUpDownMode(float pwm_min, float pwm_max, unsigned short speed_up, unsigned short speed_down);
 
 private :
     tLedMode m_mode;
-    float m_current_percent;
+    tLedMode m_mode_old;
+    float m_current_pwm;
     unsigned short m_on_duration;
     unsigned short m_off_duration;
     unsigned short m_num_cycle;
@@ -48,6 +49,12 @@ private :
     unsigned long m_count;
     unsigned long m_time;
     unsigned char m_index_array;
+
+    signed char m_ramp_direction;   // +1 up / -1=down
+    float m_ramp_min_pwm;
+    float m_ramp_max_pwm;
+    float m_ramp_speed_up;
+    float m_ramp_speed_down;
 };
 
 #endif
