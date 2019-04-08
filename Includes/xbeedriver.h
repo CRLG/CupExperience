@@ -21,9 +21,11 @@ public:
     virtual void delay_us(unsigned long delay);
 
     void setMessengerInterface(MessengerInterfaceBase *messenger_iface);
+    void activeDebug(bool on_off);
 
 private :
     MessengerInterfaceBase *m_messenger_interface;
+    bool m_trace_debug_active;
 };
 
 #endif // XBEE_DRIVER_H_

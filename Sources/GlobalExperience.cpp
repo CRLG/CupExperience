@@ -25,6 +25,7 @@ CGlobale::CGlobale()
     m_pwm_min_bandeau_led = 50.0f;
     m_bandeau_led_speed_up = 1;
     m_bandeau_led_speed_down = 3;
+    m_trace_debug_active = true;
 
     m_cpt_perte_com_xbee_grobot = 0xFFFF;   // Par défaut, pas de communication
 }
@@ -49,6 +50,7 @@ CGlobale::~CGlobale()
 */
 void CGlobale::readEEPROM()
 {
+    m_eeprom.getValue("TraceDebugActive", &Application.m_trace_debug_active);
     m_eeprom.getValue("ModeFonctionnement", &Application.ModeFonctionnement);
     m_eeprom.getValue("DureePilotageMoteur", &Application.m_duree_pilotage_moteur);
     m_eeprom.getValue("TempsConfirmationDepartSecours", &Application.m_temps_confirmation_depart_secours);
@@ -58,15 +60,18 @@ void CGlobale::readEEPROM()
     m_eeprom.getValue("BandeauLedSpeedUp", &Application.m_bandeau_led_speed_up);
     m_eeprom.getValue("BandeauLedSpeedDown", &Application.m_bandeau_led_speed_down);
 
-    _rs232_pc_tx.printf("- EEPROM -\n\r");
-    _rs232_pc_tx.printf("   > ModeFonctionnement = %d\n\r", Application.ModeFonctionnement);
-    _rs232_pc_tx.printf("   > DureePilotageMoteur = %d\n\r", Application.m_duree_pilotage_moteur);
-    _rs232_pc_tx.printf("   > TempsConfirmationDepartSecours = %f\n\r", Application.m_temps_confirmation_depart_secours);
-    _rs232_pc_tx.printf("   > SeuilDetectionDepartSecours = %d\n\r", Application.m_seuil_detection_depart_secours);
-    _rs232_pc_tx.printf("   > PwmMoteurOn = %f\n\r", Application.m_pwm_moteur_on);
-    _rs232_pc_tx.printf("   > PwmMinBandeauLed = %f\n\r", Application.m_pwm_min_bandeau_led);
-    _rs232_pc_tx.printf("   > BandeauLedSpeedUp = %f\n\r", Application.m_bandeau_led_speed_up);
-    _rs232_pc_tx.printf("   > BandeauLedSpeedDown = %f\n\r", Application.m_bandeau_led_speed_down);
+    if (m_trace_debug_active) {
+        _rs232_pc_tx.printf("- EEPROM -\n\r");
+        _rs232_pc_tx.printf("   > TraceDebugActive = %d\n\r", Application.m_trace_debug_active);
+        _rs232_pc_tx.printf("   > ModeFonctionnement = %d\n\r", Application.ModeFonctionnement);
+        _rs232_pc_tx.printf("   > DureePilotageMoteur = %d\n\r", Application.m_duree_pilotage_moteur);
+        _rs232_pc_tx.printf("   > TempsConfirmationDepartSecours = %f\n\r", Application.m_temps_confirmation_depart_secours);
+        _rs232_pc_tx.printf("   > SeuilDetectionDepartSecours = %d\n\r", Application.m_seuil_detection_depart_secours);
+        _rs232_pc_tx.printf("   > PwmMoteurOn = %f\n\r", Application.m_pwm_moteur_on);
+        _rs232_pc_tx.printf("   > PwmMinBandeauLed = %f\n\r", Application.m_pwm_min_bandeau_led);
+        _rs232_pc_tx.printf("   > BandeauLedSpeedUp = %f\n\r", Application.m_bandeau_led_speed_up);
+        _rs232_pc_tx.printf("   > BandeauLedSpeedDown = %f\n\r", Application.m_bandeau_led_speed_down);
+    }
 }
 
 
@@ -242,13 +247,15 @@ void CGlobale::SequenceurModeAutonome(void)
   if (cpt1sec >= TEMPO_1sec) {
   	cpt1sec = 0;
 
-    _rs232_pc_tx.printf("m_distance_telemetre = %f\n\r", m_distance_telemetre);
-    _rs232_pc_tx.printf("m_cpt_filtrage_telemetre = %f\n\r", m_cpt_filtrage_telemetre);
-    _rs232_pc_tx.printf("m_ordre_depart_secours = %d\n\r", m_ordre_depart_secours);
-    _rs232_pc_tx.printf("m_xbee_grosbot_present = %d\n\r", m_xbee_grosbot_present);
-    _rs232_pc_tx.printf("m_TimestampMatch.Timestamp = %d\n\r", m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp);
-    _rs232_pc_tx.printf("m_cpt_temps_pilotage_moteur = %f\n\r", m_cpt_temps_pilotage_moteur);
-    _rs232_pc_tx.printf("\n\r");
+    if (m_trace_debug_active) {
+        _rs232_pc_tx.printf("m_distance_telemetre = %f\n\r", m_distance_telemetre);
+        _rs232_pc_tx.printf("m_cpt_filtrage_telemetre = %f\n\r", m_cpt_filtrage_telemetre);
+        _rs232_pc_tx.printf("m_ordre_depart_secours = %d\n\r", m_ordre_depart_secours);
+        _rs232_pc_tx.printf("m_xbee_grosbot_present = %d\n\r", m_xbee_grosbot_present);
+        _rs232_pc_tx.printf("m_TimestampMatch.Timestamp = %d\n\r", m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp);
+        _rs232_pc_tx.printf("m_cpt_temps_pilotage_moteur = %f\n\r", m_cpt_temps_pilotage_moteur);
+        _rs232_pc_tx.printf("\n\r");
+    }
   }
 }
 
@@ -309,7 +316,6 @@ void CGlobale::stateflowExperience()
             commandMotor(m_pwm_moteur_on);
             if (entry_state) {
                 m_bandeau_led_experience.setRampUpDownMode(m_pwm_min_bandeau_led, 100., m_bandeau_led_speed_up, m_bandeau_led_speed_down);
-                _rs232_pc_tx.printf("!!!!!! EXPERIENCE_IN_PROGRESS !!!!!! \n\r");
             }
             if (m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp == Message_TIMESTAMP_MATCH::MATCH_END) {
                 m_experience_state = EXPERIENCE_FINISHED;

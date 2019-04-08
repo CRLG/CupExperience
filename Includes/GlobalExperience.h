@@ -76,6 +76,7 @@ public :
     float m_pwm_min_bandeau_led;
     float m_bandeau_led_speed_up;
     float m_bandeau_led_speed_down;
+    unsigned int m_trace_debug_active;
 
     CGlobale();
     ~CGlobale();

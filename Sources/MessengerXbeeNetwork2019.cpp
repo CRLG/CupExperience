@@ -6,6 +6,7 @@ MessengerXbeeNetwork::MessengerXbeeNetwork()
 {
     init(&m_transporter, &m_database);
     m_database.m_TimestampMatch.setTransmitPeriod(100);
+    m_trace_debug_active = true;
 }
 
 MessengerXbeeNetwork::~MessengerXbeeNetwork()
@@ -17,7 +18,9 @@ void MessengerXbeeNetwork::IRQ_ReceiveRS232()
 {
     char rxData;
     rxData = _rs232_xbee_network_rx.getc();
-    _rs232_pc_tx.putc(rxData);
+    if (m_trace_debug_active) {
+        _rs232_pc_tx.putc(rxData);
+    }
     _led3 = !_led3;
     m_xbee.decode(rxData);
 }
@@ -33,8 +36,11 @@ void MessengerXbeeNetwork::readEEPROM()
     Application.m_eeprom.getValue("XBEE.KEY", &m_xbee_settings.KEY[0]);
     Application.m_eeprom.getValue("XBEE.COORDINATOR", (char*)&m_xbee_settings.COORDINATOR);
     Application.m_eeprom.getValue("XBEE.COORDINATOR_OPTION", (char*)&m_xbee_settings.COORDINATOR_OPTION);
+    Application.m_eeprom.getValue("TraceDebugActive", &m_trace_debug_active);
 
-    debug_settings();
+    if (m_trace_debug_active) {
+        debug_settings();
+    }
 /*
     XBEE n°1
       m_xbee_settings.APIMODE = '1';
@@ -63,6 +69,7 @@ void MessengerXbeeNetwork::readEEPROM()
 void MessengerXbeeNetwork::start()
 {
     readEEPROM();
+    m_xbee.activeDebug(m_trace_debug_active);
 
     m_database.restart();
     while (_rs232_xbee_network_rx.readable()) _rs232_xbee_network_rx.getc(); // Nettoie tout octet en attente dans le buffer

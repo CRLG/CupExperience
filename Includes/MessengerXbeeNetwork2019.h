@@ -51,6 +51,8 @@ public:
     //! Xbee settings
     tXbeeSettings m_xbee_settings;
 
+    unsigned int m_trace_debug_active;
+
     void debug_settings();
 };
 
