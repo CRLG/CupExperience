@@ -16,6 +16,13 @@ typedef enum {
 	MODE_PILOTE_TERMINAL
 }tModeFonctionnement;
 
+typedef enum {
+    MOTIF_ALLUME_FIXE = 0,
+    MOTIF_RAMPE,
+    MOTIF_PULSE,
+    MOTIF_CLIGNOTANT
+}tMotifBandeauLed;
+
 // Pour le séquenceur de tâche
 #define PERIODE_TICK	(10)
 #define TEMPO_10msec	(10/PERIODE_TICK) 
@@ -77,6 +84,7 @@ public :
     float m_bandeau_led_speed_up;
     float m_bandeau_led_speed_down;
     unsigned int m_trace_debug_active;
+    unsigned int m_motif_bandeau_led;
 
     CGlobale();
     ~CGlobale();

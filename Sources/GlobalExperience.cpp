@@ -26,6 +26,7 @@ CGlobale::CGlobale()
     m_bandeau_led_speed_up = 1;
     m_bandeau_led_speed_down = 3;
     m_trace_debug_active = true;
+    m_motif_bandeau_led = MOTIF_RAMPE;
 
     m_cpt_perte_com_xbee_grobot = 0xFFFF;   // Par défaut, pas de communication
 }
@@ -59,6 +60,7 @@ void CGlobale::readEEPROM()
     m_eeprom.getValue("PwmMinBandeauLed", &Application.m_pwm_min_bandeau_led);
     m_eeprom.getValue("BandeauLedSpeedUp", &Application.m_bandeau_led_speed_up);
     m_eeprom.getValue("BandeauLedSpeedDown", &Application.m_bandeau_led_speed_down);
+    m_eeprom.getValue("MotifBandeauLed", &Application.m_motif_bandeau_led);
 
     if (m_trace_debug_active) {
         _rs232_pc_tx.printf("- EEPROM -\n\r");
@@ -71,6 +73,7 @@ void CGlobale::readEEPROM()
         _rs232_pc_tx.printf("   > PwmMinBandeauLed = %f\n\r", Application.m_pwm_min_bandeau_led);
         _rs232_pc_tx.printf("   > BandeauLedSpeedUp = %f\n\r", Application.m_bandeau_led_speed_up);
         _rs232_pc_tx.printf("   > BandeauLedSpeedDown = %f\n\r", Application.m_bandeau_led_speed_down);
+        _rs232_pc_tx.printf("   > MotifBandeauLed = %d\n\r", Application.m_motif_bandeau_led);
     }
 }
 
@@ -315,7 +318,20 @@ void CGlobale::stateflowExperience()
             commandeLocalRGBLED(LED_BLUE, 0.5f, cligno_led);
             commandMotor(m_pwm_moteur_on);
             if (entry_state) {
-                m_bandeau_led_experience.setRampUpDownMode(m_pwm_min_bandeau_led, 100., m_bandeau_led_speed_up, m_bandeau_led_speed_down);
+                switch(m_motif_bandeau_led) {
+                    case MOTIF_CLIGNOTANT :
+                        m_bandeau_led_experience.setPulseMode(500, 500, INFINITE);
+                    break;
+                    case MOTIF_PULSE :
+                        m_bandeau_led_experience.setPulseMode(100, 1000, INFINITE);
+                    break;
+                    case MOTIF_RAMPE :
+                        m_bandeau_led_experience.setRampUpDownMode(m_pwm_min_bandeau_led, 100., m_bandeau_led_speed_up, m_bandeau_led_speed_down);
+                    break;
+                    default :
+                        m_bandeau_led_experience.setState(true);
+                    break;
+                }
             }
             if (m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp == Message_TIMESTAMP_MATCH::MATCH_END) {
                 m_experience_state = EXPERIENCE_FINISHED;
