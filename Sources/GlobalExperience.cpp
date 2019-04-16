@@ -369,12 +369,12 @@ void CGlobale::stateflowExperience()
 void CGlobale::commandMotor(float percent)
 {
     if (percent > 0) {
-        _Mot_Sens1 = 1;
-        _Mot_Sens2 = 0;
-    }
-    else if (percent < 0) {
         _Mot_Sens1 = 0;
         _Mot_Sens2 = 1;
+    }
+    else if (percent < 0) {
+        _Mot_Sens1 = 1;
+        _Mot_Sens2 = 0;
     }
     else { // PWM = 0 : pont en H en court-circuit
         _Mot_Sens1 = 1;
