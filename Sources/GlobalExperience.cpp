@@ -346,7 +346,9 @@ void CGlobale::stateflowExperience()
         // ________________________________________
         case EXPERIENCE_FINISHED :
             commandMotor(0); // Arrête le moteur mais laisse allumé l'affichage visuel
-            m_bandeau_led_experience.setState(true);
+            if (entry_state) {
+                m_bandeau_led_experience.setPulseMode(100, 500, INFINITE);
+            }
             commandeLocalRGBLED(LED_GREEN, 1.0f, cligno_led);
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_FINISHED;
         break;
