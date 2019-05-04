@@ -282,6 +282,7 @@ void CGlobale::stateflowExperience()
         case EXPERIENCE_INIT :
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_WAITING_FOR_START;
             m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp = 0;
+            m_messenger_xbee_ntw.m_database.m_RobotLegoStatus.Status = Message_ROBOTLEGO_STATUS::ROBOTLEGO_EN_PREPARATION;
             commandMotor(0);
             m_bandeau_led_experience.setState(false);
 
