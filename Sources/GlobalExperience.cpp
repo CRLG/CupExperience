@@ -135,7 +135,6 @@ void CGlobale::Run(void)
 
   m_experience_state = EXPERIENCE_INIT;
   m_experience_state_old = m_experience_state + 1;  //+1 pour que les 2 n'aient pas la même valeur
-  m_messenger_xbee_ntw.m_database.m_ExperienceStatus.setTransmitPeriod(1000);
 
   periodicTick.attach(&Application, &CGlobale::IRQ_Tick_ModeAutonome, (float(PERIODE_TICK)/1000.0f));
 
