@@ -52,12 +52,16 @@ INCLUDE_PATHS += -I../$(CPPROBLIB_PATH)/Communication/XBEE
 
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/databasebase.o
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/messagebase.o
+OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/nodebase.o
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/messengerinterfacebase.o
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/transporterbase.o
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/transportergeneric.o
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/DatabaseXbeeNetwork2019/databasexbeenetwork2019.o
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/DatabaseXbeeNetwork2019/message_experience_status.o
+OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/DatabaseXbeeNetwork2019/message_robot_lego_2019.o
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/MessagesGeneric/message_timestamp_match.o
+OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/MessagesGeneric/message_robotlego_status.o
+OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/MessagesGeneric/message_balise_positions.o
 OBJECTS += $(CPPROBLIB_PATH)/Communication/XBEE/xbeedriverbase.o
 
 

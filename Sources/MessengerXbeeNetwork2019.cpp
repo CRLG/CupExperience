@@ -5,12 +5,19 @@
 MessengerXbeeNetwork::MessengerXbeeNetwork()
 {
     init(&m_transporter, &m_database);
-    m_database.m_TimestampMatch.setTransmitPeriod(100);
+    initMessages();
     m_trace_debug_active = true;
 }
 
 MessengerXbeeNetwork::~MessengerXbeeNetwork()
 {
+}
+
+// ______________________________________________
+void MessengerXbeeNetwork::initMessages()
+{
+    m_database.m_ExperienceStatus.setTransmitPeriod(1000);
+    m_database.m_ExperienceStatus.setDestinationAddress(0xFFFF);
 }
 
 // ______________________________________________
@@ -87,12 +94,8 @@ void MessengerXbeeNetwork::stop()
 // ______________________________________________
 void MessengerXbeeNetwork::execute()
 {
-    int current_time = _Global_Timer.read_ms();
-
-    if (m_database.m_ExperienceStatus.isTimeToSend(current_time)) {
-        m_database.m_ExperienceStatus.setDestinationAddress(0xFFFF);
-        m_database.m_ExperienceStatus.send();
-    }
+    m_database.checkAndSendPeriodicMessages();
+    m_database.checkNodeCommunication();
 }
 
 // ===================================================
@@ -102,6 +105,15 @@ void MessengerXbeeNetwork::execute()
 void MessengerXbeeNetwork::encode(unsigned char *buff_data, unsigned short buff_size, unsigned short dest_address)
 {
     m_xbee.encode(buff_data, buff_size, dest_address);
+}
+
+// ===================================================
+//              MESSENGER RESSOURCES
+// ===================================================
+// ______________________________________________
+long MessengerXbeeNetwork::getTime()
+{
+    return _Global_Timer.read_ms();
 }
 
 // ===================================================

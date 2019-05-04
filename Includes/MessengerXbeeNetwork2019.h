@@ -29,6 +29,9 @@ public:
     //    Reimplement MessengerInterfaceBase virual
     virtual void encode(unsigned char *buff_data, unsigned short buff_size, unsigned short dest_address=0);
 
+    // This method is called by messenger to get current time [msec]
+    virtual long getTime();
+
     // Events
     // This method is called by messenger (transporter) to inform a valid frame was received
     virtual void newFrameReceived(tMessengerFrame *frame);
@@ -54,6 +57,9 @@ public:
     unsigned int m_trace_debug_active;
 
     void debug_settings();
+
+private :
+    void initMessages();
 };
 
 #endif // _XBEE_NETWORK_MESSENGER_2019_H_
