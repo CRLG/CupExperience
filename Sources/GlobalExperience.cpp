@@ -27,8 +27,6 @@ CGlobale::CGlobale()
     m_bandeau_led_speed_down = 3;
     m_trace_debug_active = true;
     m_motif_bandeau_led = MOTIF_RAMPE;
-
-    m_cpt_perte_com_xbee_grobot = 0xFFFF;   // Par défaut, pas de communication
 }
 
 //___________________________________________________________________________
@@ -228,17 +226,8 @@ void CGlobale::SequenceurModeAutonome(void)
   cpt200msec++;
   if (cpt200msec >= TEMPO_200msec) {
   	cpt200msec = 0;
-
-    // Diagnostic de perte de communication avec GROSBOT
-    if (m_messenger_xbee_ntw.m_database.m_TimestampMatch.isNewMessage()) {
-        //_rs232_pc_tx.printf("TimestampMatch message was received : %d\n\r", m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp);
-        m_cpt_perte_com_xbee_grobot = 0;
-    }
-    else {
-        if (m_cpt_perte_com_xbee_grobot < 0xFFFF) m_cpt_perte_com_xbee_grobot++;
-    }
-    m_xbee_grosbot_present = m_cpt_perte_com_xbee_grobot < 20;
   }
+
   // ______________________________
   cpt500msec++;
   if (cpt500msec >= TEMPO_500msec) {
@@ -253,7 +242,6 @@ void CGlobale::SequenceurModeAutonome(void)
         _rs232_pc_tx.printf("m_distance_telemetre = %f\n\r", m_distance_telemetre);
         _rs232_pc_tx.printf("m_cpt_filtrage_telemetre = %f\n\r", m_cpt_filtrage_telemetre);
         _rs232_pc_tx.printf("m_ordre_depart_secours = %d\n\r", m_ordre_depart_secours);
-        _rs232_pc_tx.printf("m_xbee_grosbot_present = %d\n\r", m_xbee_grosbot_present);
         _rs232_pc_tx.printf("m_TimestampMatch.Timestamp = %d\n\r", m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp);
         _rs232_pc_tx.printf("m_cpt_temps_pilotage_moteur = %f\n\r", m_cpt_temps_pilotage_moteur);
         _rs232_pc_tx.printf("\n\r");
@@ -284,7 +272,7 @@ void CGlobale::traitementTelemetre()
 //___________________________________________________________________________
 void CGlobale::stateflowExperience()
 {
-    bool cligno_led = !m_xbee_grosbot_present;
+    bool cligno_led = !m_messenger_xbee_ntw.m_database.m_node_grosbot.isPresent() && !m_messenger_xbee_ntw.m_database.m_node_legobot.isPresent();
     bool entry_state = (m_experience_state != m_experience_state_old);
     m_experience_state_old = m_experience_state;
 
@@ -305,6 +293,7 @@ void CGlobale::stateflowExperience()
             commandeLocalRGBLED(LED_PURPLE, 0.5f, cligno_led);
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_WAITING_FOR_START;
             if (    (m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp > 1)
+                 || (m_messenger_xbee_ntw.m_database.m_RobotLegoStatus.Status == Message_ROBOTLEGO_STATUS::ROBOTLEGO_MATCH_EN_COURS)
                  || (m_ordre_depart_secours) // Condition de départ de secours
                )
             {

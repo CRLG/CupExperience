@@ -65,8 +65,6 @@ public :
     Led m_bandeau_led_experience;
     //! Network
     MessengerXbeeNetwork m_messenger_xbee_ntw;
-    unsigned int m_cpt_perte_com_xbee_grobot;
-    bool m_xbee_grosbot_present;
 
     //! Départ de secours
     //! (VCC_capteur/512) -> 2.54cm
