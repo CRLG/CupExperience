@@ -158,29 +158,6 @@ void MessengerXbeeNetwork::dataChanged(char *name, char *val_str)
 //                  LOCAL METHODS
 // ===================================================
 // ______________________________________________
-void MessengerXbeeNetwork::test_RX()
-{
-    // Simulate data reception
-    // Message_TIMESTAMP_MATCH : ID 0x0001
-    unsigned char data[] = { 'T', 0x00, 0x01, 0x02, 0x00, 0x11, 0x14 };
-    for (unsigned int i=0; i<sizeof(data);  i++) {
-        decode(data[i]);
-    }
-}
-
-// ______________________________________________
-void MessengerXbeeNetwork::test_TX()
-{
-    // Send message
-    Message_EXPERIENCE_STATUS *msg = &m_database.m_ExperienceStatus;
-    msg->ExperienceStatus = 0xABCD;
-    m_database.m_ExperienceStatus.setDestinationAddress(98);
-    msg->send();
-    m_database.m_ExperienceStatus.setDestinationAddress(95);  // send once again to another destination
-    msg->send();
-}
-
-// ______________________________________________
 void MessengerXbeeNetwork::debug_settings()
 {
     _rs232_pc_tx.printf("\n\rXBEE SETTINGS\r\n");

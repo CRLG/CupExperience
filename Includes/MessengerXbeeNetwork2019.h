@@ -21,8 +21,6 @@ public:
     void execute();
     void IRQ_ReceiveRS232();
 
-    void test_RX();
-    void test_TX();
     void readEEPROM();
 
     // =============================================
