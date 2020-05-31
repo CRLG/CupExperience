@@ -231,6 +231,8 @@ void CGlobale::SequenceurModeAutonome(void)
   cpt200msec++;
   if (cpt200msec >= TEMPO_200msec) {
   	cpt200msec = 0;
+
+    m_servos_ax.setPositionSpeed(2, 459, 5);  // @Alex : c'est juste pour essayer, à supprimer
   }
 
   // ______________________________
