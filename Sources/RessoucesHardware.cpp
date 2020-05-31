@@ -61,7 +61,8 @@ Serial _rs232_xbee_network_rx(p9, p10);
 // __________________________________________________ FICHIERS SUR MBED
 LocalFileSystem local("local");
 
-
+// __________________________________________________ RS232 de pilotage des servos AX
+Serial _ax12_serial (p28, p27);
 
 
 

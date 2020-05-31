@@ -5,6 +5,7 @@
 #define _GLOBALE_H_
 
 #include "CLeds.h"
+#include "CLed.h"
 #include "CEEPROM.h"
 #include "MessengerXbeeNetwork2019.h"
 #include "xbeedriver.h"
@@ -59,12 +60,16 @@ public :
     //CLaBotBox m_LaBotBox;
     //! Le gestionnaire d'EEPROM
     CEEPROM m_eeprom;
-    //! La gestion des Led MBED
-    CLeds m_leds_mbed;
     //! Bandeau de LED
     Led m_bandeau_led_experience;
     //! Network
     MessengerXbeeNetwork m_messenger_xbee_ntw;
+    //! La gestion des Led MBED
+     CLed m_led1;
+     CLed m_led2;
+     CLed m_led3;
+     CLed m_led4;
+     CLeds m_leds_mbed;
 
     //! Départ de secours
     //! (VCC_capteur/512) -> 2.54cm

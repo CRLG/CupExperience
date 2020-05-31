@@ -14,5 +14,7 @@ ext/CppRobLib/Communication/Messenger
 ext/CppRobLib/Communication/Messenger/DatabaseXbeeNetwork2019
 ext/CppRobLib/Communication/Messenger/MessagesGeneric
 ext/CppRobLib/Communication/XBEE
+ext/CppRobLib/common-rob
+ext/CppRobLib/ServosAX
 Includes
 

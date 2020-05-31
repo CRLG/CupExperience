@@ -15,6 +15,11 @@
    \return --
 */
 CGlobale::CGlobale() 
+    : m_led1(&_led1),
+      m_led2(&_led2),
+      m_led3(&_led3),
+      m_led4(&_led4),
+      m_leds_mbed(&m_led1, &m_led2, &m_led3, &m_led4)
 {
     ModeFonctionnement = MODE_AUTONOME;
     m_duree_pilotage_moteur = DUREE_PILOTAGE_MOTEUR_NOMINAL;

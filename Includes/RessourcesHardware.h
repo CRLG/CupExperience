@@ -52,6 +52,8 @@ extern DigitalOut   _Mot_Sens2;
 extern DigitalOut   _LED_Sens1;
 extern DigitalOut   _LED_Sens2;
 
+extern Serial _ax12_serial;
+
 //extern DigitalIn  _Estart;
 #endif
 

@@ -23,7 +23,7 @@ OBJECTS += Sources/xbeedriver.o
 OBJECTS += Sources/RessoucesHardware.o
 OBJECTS += Sources/GlobalExperience.o
 OBJECTS += Sources/led.o
-
+OBJECTS += Sources/CServoMoteurAX.o
 
 ###############################################################################
 # Objects and Paths for mbed-common
@@ -32,13 +32,13 @@ INCLUDE_PATHS += -I../$(MBED_COMMON_ROB_PATH)/Includes
 
 OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CEEPROM.o
 #OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CLaBotBox.o
-OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CLeds.o
 #OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CMoteurs.o
 OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/ConfigFile.o
 #OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CRoues.o
 #OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CTrameCAN.o
 #OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CTrameLaBotBox.o
 #OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/MessagerieLaBotBox.o
+OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CLed.o
 
 ###############################################################################
 # Objects and Paths for CppRobLib
@@ -48,7 +48,8 @@ INCLUDE_PATHS += -I../$(CPPROBLIB_PATH)/Communication/Messenger
 INCLUDE_PATHS += -I../$(CPPROBLIB_PATH)/Communication/Messenger/DatabaseXbeeNetwork2019
 INCLUDE_PATHS += -I../$(CPPROBLIB_PATH)/Communication/Messenger/MessagesGeneric
 INCLUDE_PATHS += -I../$(CPPROBLIB_PATH)/Communication/XBEE
-#INCLUDE_PATHS += -I../$(CPPROBLIB_PATH)/ServosAX
+INCLUDE_PATHS += -I../$(CPPROBLIB_PATH)/ServosAX
+INCLUDE_PATHS += -I../$(CPPROBLIB_PATH)/common-rob
 
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/databasebase.o
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/messagebase.o
@@ -62,10 +63,11 @@ OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/DatabaseXbeeNetwork2019/mes
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/MessagesGeneric/message_timestamp_match.o
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/MessagesGeneric/message_robotlego_status.o
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/MessagesGeneric/message_balise_positions.o
+OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/MessagesGeneric/message_grosbot_position.o
 OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/MessagesGeneric/message_free_string.o
 OBJECTS += $(CPPROBLIB_PATH)/Communication/XBEE/xbeedriverbase.o
-
-
+OBJECTS += $(CPPROBLIB_PATH)/common-rob/CLedBase.o
+OBJECTS += $(CPPROBLIB_PATH)/common-rob/CLeds.o
 
 ###############################################################################
 #  DO NOT MODIFY FROM HERE

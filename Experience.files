@@ -166,7 +166,6 @@ ext/mbed-common-rob/Sources/CMatch.cpp
 ext/mbed-common-rob/Sources/CMoteurs.cpp
 ext/mbed-common-rob/Sources/ConfigFile.cpp
 ext/mbed-common-rob/Sources/CRoues.cpp
-ext/mbed-common-rob/Sources/CServoMoteurAX.cpp
 ext/mbed-common-rob/Sources/CServoMoteurSD20.cpp
 ext/mbed-common-rob/Sources/CTelemetres.cpp
 ext/mbed-common-rob/Sources/CTrameCamera.cpp
@@ -175,12 +174,16 @@ ext/mbed-common-rob/Sources/CTrameLaBotBox.cpp
 ext/mbed-common-rob/Sources/MessagerieCamera.cpp
 ext/mbed-common-rob/Sources/MessagerieLaBotBox.cpp
 
+./makefile
+
 Sources/main.cpp
 Sources/MessengerXbeeNetwork2019.cpp
 Sources/RessoucesHardware.cpp
 Sources/GlobalExperience.cpp
 Sources/xbeedriver.cpp
 Sources/led.cpp
+Sources/CServoMoteurAX.cpp
+
 
 Includes/MessengerXbeeNetwork2019.h
 Includes/RessoucesHardware.h
@@ -220,6 +223,8 @@ ext/CppRobLib/Communication/Messenger/MessagesGeneric/message_robotlego_status.c
 ext/CppRobLib/Communication/Messenger/MessagesGeneric/message_robotlego_status.h
 ext/CppRobLib/Communication/Messenger/MessagesGeneric/message_balise_positions.cpp
 ext/CppRobLib/Communication/Messenger/MessagesGeneric/message_balise_positions.h
+ext/CppRobLib/Communication/Messenger/MessagesGeneric/message_grosbot_position.cpp
+ext/CppRobLib/Communication/Messenger/MessagesGeneric/message_grosbot_position.h
 
 ext/CppRobLib/Communication/XBEE/xbeedriverbase.cpp
 ext/CppRobLib/Communication/XBEE/xbeedriverbase.h
@@ -228,4 +233,9 @@ ext/CppRobLib/ServosAX/servoaxbase.cpp
 ext/CppRobLib/ServosAX/servoaxbase.h
 ext/CppRobLib/ServosAX/servoax_utils.cpp
 ext/CppRobLib/ServosAX/servoax_utils.h
+
+ext/CppRobLib/common-rob/CLedBase.cpp
+ext/CppRobLib/common-rob/CLeds.cpp
+ext/mbed-common-rob/Sources/CLed.cpp
+
 

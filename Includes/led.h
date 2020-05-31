@@ -2,8 +2,8 @@
 	\brief Classe qui contient la gestion des LED
 */
 
-#ifndef _LED_H_
-#define _LED_H_
+#ifndef _BANDEAU_LED_H_
+#define _BANDEAU_LED_H_
 
 #include "RessourcesHardware.h"
 
