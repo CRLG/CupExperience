@@ -68,6 +68,8 @@ OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/MessagesGeneric/message_fre
 OBJECTS += $(CPPROBLIB_PATH)/Communication/XBEE/xbeedriverbase.o
 OBJECTS += $(CPPROBLIB_PATH)/common-rob/CLedBase.o
 OBJECTS += $(CPPROBLIB_PATH)/common-rob/CLeds.o
+OBJECTS += $(CPPROBLIB_PATH)/ServosAX/servoaxbase.o
+OBJECTS += $(CPPROBLIB_PATH)/ServosAX/servoax_utils.o
 
 ###############################################################################
 #  DO NOT MODIFY FROM HERE
