@@ -1,0 +1,8 @@
+BUILD
+*.bak
+*.d
+*.o
+*.elf
+*.hex
+*.map
+*.disasm
