@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "RessourcesHardware.h"
-#include "xbeedriver.h"
+#include "Includes/xbeedriver.h"  // ajoute le "Includes/" pour éviter l'ambiguité avec le xbeedriver dans CppRobLib qui porte le même nom
 #include "messengerinterfacebase.h"
 
 XbeeDriver::XbeeDriver() :

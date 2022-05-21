@@ -116,7 +116,7 @@ void CGlobale::Run(void)
     _rs232_xbee_network_rx.baud(9600);
     _rs232_xbee_network_rx.format(8, Serial::None, 1);   	// 8 bits de données / Pas de parité / 1 bit de stop
 
-    _rs232_pc_tx.printf("\n\rEXPERIENCE ELECTRON 2019\n\r");
+    _rs232_pc_tx.printf("\n\rCUP EXPERIENCE 2022\n\r");
 
     //_rs232_pc_rx.attach(this, &CGlobale::IRQ_Serial_PC);  	// Callback sur réception d'une donnée sur la RS232
 
@@ -232,7 +232,6 @@ void CGlobale::SequenceurModeAutonome(void)
   if (cpt200msec >= TEMPO_200msec) {
   	cpt200msec = 0;
 
-    m_servos_ax.setPositionSpeed(2, 459, 5);  // @Alex : c'est juste pour essayer, à supprimer
   }
 
   // ______________________________

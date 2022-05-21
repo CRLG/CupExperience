@@ -182,8 +182,6 @@ Sources/RessoucesHardware.cpp
 Sources/GlobalExperience.cpp
 Sources/xbeedriver.cpp
 Sources/led.cpp
-Sources/CServoMoteurAX.cpp
-
 
 Includes/MessengerXbeeNetwork2019.h
 Includes/RessoucesHardware.h
@@ -228,11 +226,6 @@ ext/CppRobLib/Communication/Messenger/MessagesGeneric/message_grosbot_position.h
 
 ext/CppRobLib/Communication/XBEE/xbeedriverbase.cpp
 ext/CppRobLib/Communication/XBEE/xbeedriverbase.h
-
-ext/CppRobLib/ServosAX/servoaxbase.cpp
-ext/CppRobLib/ServosAX/servoaxbase.h
-ext/CppRobLib/ServosAX/servoax_utils.cpp
-ext/CppRobLib/ServosAX/servoax_utils.h
 
 ext/CppRobLib/common-rob/CLedBase.cpp
 ext/CppRobLib/common-rob/CLeds.cpp

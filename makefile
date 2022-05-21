@@ -23,7 +23,6 @@ OBJECTS += Sources/xbeedriver.o
 OBJECTS += Sources/RessoucesHardware.o
 OBJECTS += Sources/GlobalExperience.o
 OBJECTS += Sources/led.o
-OBJECTS += Sources/CServoMoteurAX.o
 
 ###############################################################################
 # Objects and Paths for mbed-common
@@ -31,13 +30,7 @@ INCLUDE_PATHS += -I../$(MBED_COMMON_ROB_PATH)
 INCLUDE_PATHS += -I../$(MBED_COMMON_ROB_PATH)/Includes
 
 OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CEEPROM.o
-#OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CLaBotBox.o
-#OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CMoteurs.o
 OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/ConfigFile.o
-#OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CRoues.o
-#OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CTrameCAN.o
-#OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CTrameLaBotBox.o
-#OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/MessagerieLaBotBox.o
 OBJECTS += $(MBED_COMMON_ROB_PATH)/Sources/CLed.o
 
 ###############################################################################
@@ -68,8 +61,6 @@ OBJECTS += $(CPPROBLIB_PATH)/Communication/Messenger/MessagesGeneric/message_fre
 OBJECTS += $(CPPROBLIB_PATH)/Communication/XBEE/xbeedriverbase.o
 OBJECTS += $(CPPROBLIB_PATH)/common-rob/CLedBase.o
 OBJECTS += $(CPPROBLIB_PATH)/common-rob/CLeds.o
-OBJECTS += $(CPPROBLIB_PATH)/ServosAX/servoaxbase.o
-OBJECTS += $(CPPROBLIB_PATH)/ServosAX/servoax_utils.o
 
 ###############################################################################
 #  DO NOT MODIFY FROM HERE

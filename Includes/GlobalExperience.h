@@ -10,7 +10,6 @@
 #include "MessengerXbeeNetwork2019.h"
 #include "xbeedriver.h"
 #include "led.h"
-#include "CServoMoteurAX.h"
 
 typedef enum {
 	MODE_AUTONOME = 0,
@@ -71,9 +70,6 @@ public :
      CLed m_led3;
      CLed m_led4;
      CLeds m_leds_mbed;
-
-     //! Servos AX
-     CServoMoteurAX m_servos_ax;
 
     //! Départ de secours
     //! (VCC_capteur/512) -> 2.54cm
