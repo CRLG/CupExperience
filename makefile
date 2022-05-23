@@ -23,6 +23,7 @@ OBJECTS += Sources/xbeedriver.o
 OBJECTS += Sources/RessoucesHardware.o
 OBJECTS += Sources/GlobalExperience.o
 OBJECTS += Sources/led.o
+OBJECTS += Sources/leds_ws2812b.o
 
 ###############################################################################
 # Objects and Paths for mbed-common

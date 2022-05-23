@@ -5,8 +5,6 @@
 #include "RessourcesHardware.h"
 #include "GlobalExperience.h"
 
-
-
 //___________________________________________________________________________
  /*!
    \brief Constructeur
@@ -19,7 +17,8 @@ CGlobale::CGlobale()
       m_led2(&_led2),
       m_led3(&_led3),
       m_led4(&_led4),
-      m_leds_mbed(&m_led1, &m_led2, &m_led3, &m_led4)
+      m_leds_mbed(&m_led1, &m_led2, &m_led3, &m_led4),
+      m_bandeau_led(_Stor_BandeauLED)
 {
     ModeFonctionnement = MODE_AUTONOME;
     m_duree_pilotage_moteur = DUREE_PILOTAGE_MOTEUR_NOMINAL;
@@ -139,6 +138,8 @@ void CGlobale::Run(void)
   m_experience_state = EXPERIENCE_INIT;
   m_experience_state_old = m_experience_state + 1;  //+1 pour que les 2 n'aient pas la même valeur
 
+  m_bandeau_led.init();
+
   periodicTick.attach(&Application, &CGlobale::IRQ_Tick_ModeAutonome, (float(PERIODE_TICK)/1000.0f));
 
   while(1) {
@@ -193,6 +194,7 @@ void CGlobale::SequenceurModeAutonome(void)
         init_once = 1;
 
     }
+
     //m_LaBotBox.Execute();
   }	 
 
@@ -203,7 +205,27 @@ void CGlobale::SequenceurModeAutonome(void)
 
     m_bandeau_led_experience.compute();
     m_leds_mbed.setState(LED_4, _Etor_xbee_status);
- }
+
+    m_bandeau_led.setPattern(1, 10, 30);
+    m_bandeau_led.configOnOffColor(1, PURPLE, BLUE);
+
+    m_bandeau_led.setPattern(13, 100, 255);
+    m_bandeau_led.configOnOffColor(13, GREEN, OFF_BLACK);
+
+    m_bandeau_led.setPattern(10, 5, 20);
+    m_bandeau_led.configOnOffColor(10, RED, OFF_BLACK);
+
+    m_bandeau_led.setPattern(8, 10, 40);
+    m_bandeau_led.configOnOffColor(8, OLIVE, OFF_BLACK);
+
+    m_bandeau_led.setPattern(5, 10, 10);
+    m_bandeau_led.configOnOffColor(5, TURQUOISE, OFF_BLACK);
+
+//    m_bandeau_led.setColor(1, PURPLE);
+//    m_bandeau_led.setColor(2, BLUE);
+//    m_bandeau_led.setColor(3, GREEN);
+    m_bandeau_led.periodicTask();
+  }
 
 
   // ______________________________

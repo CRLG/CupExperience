@@ -54,6 +54,10 @@ extern DigitalOut   _LED_Sens2;
 
 extern Serial _ax12_serial;
 
+// __________________________________________________SORTIE LED
+#define _Stor_BandeauLED (p5)
+
+
 //extern DigitalIn  _Estart;
 #endif
 
