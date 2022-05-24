@@ -31,6 +31,7 @@ CGlobale::CGlobale()
     m_bandeau_led_speed_down = 3;
     m_trace_debug_active = true;
     m_motif_bandeau_led = MOTIF_RAMPE;
+    m_ordre_depart_secours = false;
 }
 
 //___________________________________________________________________________
@@ -207,26 +208,7 @@ void CGlobale::SequenceurModeAutonome(void)
     m_bandeau_led_experience.compute();
     m_leds_mbed.setState(LED_4, _Etor_xbee_status);
 
-
-    m_bandeau_led.setPattern(1, 10, 30);
-    m_bandeau_led.configOnOffColor(1, PURPLE, BLUE);
-
-    m_bandeau_led.setPattern(16, 50, 25);
-    m_bandeau_led.configOnOffColor(16, GREEN, OFF_BLACK);
-/*
-    m_bandeau_led.setPattern(10, 5, 20);
-    m_bandeau_led.configOnOffColor(10, RED, OFF_BLACK);
-
-    m_bandeau_led.setPattern(8, 10, 40);
-    m_bandeau_led.configOnOffColor(8, OLIVE, OFF_BLACK);
-
-    m_bandeau_led.setPattern(5, 10, 10);
-    m_bandeau_led.configOnOffColor(5, TURQUOISE, OFF_BLACK);
-*/
-//    m_bandeau_led.setColor(1, PURPLE);
-//    m_bandeau_led.setColor(2, BLUE);
-//    m_bandeau_led.setColor(3, GREEN);
-    m_bandeau_led.periodicTask();
+    if (m_experience_state == EXPERIENCE_IN_PROGRESS) m_bandeau_led.periodicTask();
   }
 
 
@@ -236,11 +218,11 @@ void CGlobale::SequenceurModeAutonome(void)
   	cpt50msec = 0;
 
     m_messenger_xbee_ntw.execute();
-    traitementTelemetre();
+    //traitementTelemetre();
     stateflowExperience();
     m_leds_mbed.compute();
 
-    animeChenillardBandeauLED();
+    //animeChenillardBandeauLED();
   }
 
   // ______________________________
@@ -270,12 +252,27 @@ void CGlobale::SequenceurModeAutonome(void)
   if (cpt1sec >= TEMPO_1sec) {
   	cpt1sec = 0;
 
+    m_bandeau_led.setPattern(1, 10, 30);
+    m_bandeau_led.configOnOffColor(1, PURPLE, BLUE);
+
+    m_bandeau_led.setPattern(16, 50, 25);
+    m_bandeau_led.configOnOffColor(16, GREEN, OFF_BLACK);
+
+    for (int i=17; i<35; i++)
+    {
+        m_bandeau_led.setPattern(i, 10, 50);
+        m_bandeau_led.configOnOffColor(i, WHITE, OFF_BLACK);
+    }
+
+
     if (m_trace_debug_active) {
         _rs232_pc_tx.printf("m_distance_telemetre = %f\n\r", m_distance_telemetre);
         _rs232_pc_tx.printf("m_cpt_filtrage_telemetre = %f\n\r", m_cpt_filtrage_telemetre);
         _rs232_pc_tx.printf("m_ordre_depart_secours = %d\n\r", m_ordre_depart_secours);
         _rs232_pc_tx.printf("m_TimestampMatch.Timestamp = %d\n\r", m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp);
+        _rs232_pc_tx.printf("m_CommandeExperience.ExperienceCmd = %d\n\r", m_messenger_xbee_ntw.m_database.m_CommandeExperience.ExperienceCmd);
         _rs232_pc_tx.printf("m_cpt_temps_pilotage_moteur = %f\n\r", m_cpt_temps_pilotage_moteur);
+
         _rs232_pc_tx.printf("\n\r");
     }
   }
@@ -328,7 +325,7 @@ void CGlobale::animeChenillardBandeauLED()
 //___________________________________________________________________________
 void CGlobale::stateflowExperience()
 {
-    bool cligno_led = !m_messenger_xbee_ntw.m_database.m_node_grosbot.isPresent() && !m_messenger_xbee_ntw.m_database.m_node_legobot.isPresent();
+    bool cligno_led = !m_messenger_xbee_ntw.m_database.m_node_grosbot.isPresent();
     bool entry_state = (m_experience_state != m_experience_state_old);
     m_experience_state_old = m_experience_state;
 
@@ -349,8 +346,7 @@ void CGlobale::stateflowExperience()
         case EXPERIENCE_WAIT_START_EVENT :
             commandeLocalRGBLED(LED_PURPLE, 0.5f, cligno_led);
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_WAITING_FOR_START;
-            if (    (m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp > 1)
-                 || (m_messenger_xbee_ntw.m_database.m_RobotLegoStatus.Status == Message_ROBOTLEGO_STATUS::ROBOTLEGO_MATCH_EN_COURS)
+            if ( (m_messenger_xbee_ntw.m_database.m_CommandeExperience.ExperienceCmd== Message_COMMANDE_EXPERIENCE::EXPERIENCE_CMD_START)
                  || (m_ordre_depart_secours) // Condition de départ de secours
                )
             {
@@ -378,13 +374,14 @@ void CGlobale::stateflowExperience()
                     break;
                 }
             }
-            if (m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp == Message_TIMESTAMP_MATCH::MATCH_END) {
+            if (m_messenger_xbee_ntw.m_database.m_CommandeExperience.ExperienceCmd== Message_COMMANDE_EXPERIENCE::EXPERIENCE_CMD_STOP) {
                 m_experience_state = EXPERIENCE_FINISHED;
             }
             // arrêt automatique du moteur au bout d'un certain temps
             if (m_cpt_temps_pilotage_moteur >= m_duree_pilotage_moteur) {
                 m_experience_state = EXPERIENCE_FINISHED;
             }
+
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_IN_PROGRESS;
             m_cpt_temps_pilotage_moteur += PERIODE_APPEL_STATEFLOW_EXPERIENCE;
         break;
