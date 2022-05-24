@@ -139,6 +139,7 @@ void CGlobale::Run(void)
   m_experience_state_old = m_experience_state + 1;  //+1 pour que les 2 n'aient pas la même valeur
 
   m_bandeau_led.init();
+  m_couleur_chenillard = BLUE;
 
   periodicTick.attach(&Application, &CGlobale::IRQ_Tick_ModeAutonome, (float(PERIODE_TICK)/1000.0f));
 
@@ -206,12 +207,13 @@ void CGlobale::SequenceurModeAutonome(void)
     m_bandeau_led_experience.compute();
     m_leds_mbed.setState(LED_4, _Etor_xbee_status);
 
+
     m_bandeau_led.setPattern(1, 10, 30);
     m_bandeau_led.configOnOffColor(1, PURPLE, BLUE);
 
-    m_bandeau_led.setPattern(13, 100, 255);
-    m_bandeau_led.configOnOffColor(13, GREEN, OFF_BLACK);
-
+    m_bandeau_led.setPattern(16, 50, 25);
+    m_bandeau_led.configOnOffColor(16, GREEN, OFF_BLACK);
+/*
     m_bandeau_led.setPattern(10, 5, 20);
     m_bandeau_led.configOnOffColor(10, RED, OFF_BLACK);
 
@@ -220,7 +222,7 @@ void CGlobale::SequenceurModeAutonome(void)
 
     m_bandeau_led.setPattern(5, 10, 10);
     m_bandeau_led.configOnOffColor(5, TURQUOISE, OFF_BLACK);
-
+*/
 //    m_bandeau_led.setColor(1, PURPLE);
 //    m_bandeau_led.setColor(2, BLUE);
 //    m_bandeau_led.setColor(3, GREEN);
@@ -237,13 +239,15 @@ void CGlobale::SequenceurModeAutonome(void)
     traitementTelemetre();
     stateflowExperience();
     m_leds_mbed.compute();
+
+    animeChenillardBandeauLED();
   }
 
   // ______________________________
   cpt100msec++;
   if (cpt100msec >= TEMPO_100msec) {
   	cpt100msec = 0;
-  	
+
     if (once == 0) {
         m_leds_mbed.toggle(LED_1);
 	}
@@ -294,6 +298,30 @@ void CGlobale::traitementTelemetre()
 
     if (m_cpt_filtrage_telemetre > m_temps_confirmation_depart_secours) {
         m_ordre_depart_secours = true;
+    }
+}
+
+//___________________________________________________________________________
+#define NBRE_LED_CHENILLARD 10
+#define PREMIERE_LED_CHENILLARD 5
+void CGlobale::animeChenillardBandeauLED()
+{
+    for (unsigned int i=0; i<NBRE_LED_CHENILLARD; i++)
+    {
+        int index_led = PREMIERE_LED_CHENILLARD + i;
+        m_bandeau_led.setColor(index_led, OFF_BLACK);
+    }
+
+    m_bandeau_led.setColor(m_chenillard_state+PREMIERE_LED_CHENILLARD, m_couleur_chenillard);
+    m_chenillard_state++;
+    if (m_chenillard_state >= NBRE_LED_CHENILLARD) {
+        m_chenillard_state = 0;
+        switch(m_couleur_chenillard)
+        {
+        case BLUE : m_couleur_chenillard = GREEN; break;
+        case GREEN : m_couleur_chenillard = RED; break;
+        default : m_couleur_chenillard = BLUE; break;
+        }
     }
 }
 
@@ -397,7 +425,7 @@ void CGlobale::commandMotor(float percent)
         _Mot_Sens1 = 1;
         _Mot_Sens2 = 1;
     }
-    _Mot_PWM.write(percent/100.0);
+    _Mot_PWM.write(fabs(percent)/100.0);
 }
 
 

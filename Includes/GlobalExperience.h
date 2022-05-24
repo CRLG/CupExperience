@@ -138,6 +138,9 @@ private :
 
     void traitementTelemetre();
 
+    int m_chenillard_state;
+    unsigned long m_couleur_chenillard;
+    void animeChenillardBandeauLED();
 };
 
 

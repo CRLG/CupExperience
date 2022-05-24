@@ -50,7 +50,7 @@ private :
 
     DigitalOut m_gpio;
 
-    #define NB_OF_LEDS   16     // 16 LED à contrôler
+    #define NB_OF_LEDS   48     // 48 LED à contrôler
     #define BITS_PER_LED 24     // 1 LED = 24 bits
     tWS2812BPattern LED_WS2812B[NB_OF_LEDS];
 
