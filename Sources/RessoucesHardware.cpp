@@ -18,8 +18,8 @@ PwmOut _local_rgb_led_B(p25);
 // __________________________________________________ENTREES TOUT OU RIEN
 DigitalIn  	_Etor2(p6);
 DigitalIn  	_Etor3(p7);
-DigitalIn  	_Etor4(p8);
-DigitalIn  	_Etor5(p11);
+//DigitalIn  	_Etor4(p8);
+//DigitalIn  	_Etor5(p11);
 DigitalIn  	_Etor6(p12);
 DigitalIn  	_Etor_CanRx(p30);	// pins du CAN utilisée en entrée TOR lorsque
 DigitalIn  	_Etor_xbee_status(p29);	//  l'application n'a pas besoin du bus CAN
@@ -34,15 +34,18 @@ AnalogIn   _Eana1(p16);
 //AnalogIn   _Eana5(p20);
 
 // __________________________________________________SORTIES TOUT OU RIEN
-DigitalOut 	_Mot_Sens1(p20);
-DigitalOut 	_Mot_Sens2(p19);
+DigitalOut 	_Mot_Sens1(p18);
+DigitalOut 	_Mot_Sens2(p17);
 
-DigitalOut 	_LED_Sens1(p18);    // Les LED sont aussi pilotées par un pont en H qui nécessite des entrées IN1 et IN2 pour sélectrionner le sens
-DigitalOut 	_LED_Sens2(p17);
+
+DigitalOut 	_LED_Sens1(p8);    // Les LED sont aussi pilotées par un pont en H qui nécessite des entrées IN1 et IN2 pour sélectrionner le sens
+DigitalOut 	_LED_Sens2(p11);
+
+
 
 // __________________________________________________SORTIES PWM
-PwmOut _Mot_PWM (p21);
-PwmOut _LED_PWM (p22);
+PwmOut _Mot_PWM (p22);
+PwmOut _LED_PWM (p21);
 
 
 // __________________________________________________ TIMERS
