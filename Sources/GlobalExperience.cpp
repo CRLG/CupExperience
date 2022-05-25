@@ -18,7 +18,9 @@ CGlobale::CGlobale()
       m_led3(&_led3),
       m_led4(&_led4),
       m_leds_mbed(&m_led1, &m_led2, &m_led3, &m_led4),
-      m_bandeau_led(_Stor_BandeauLED)
+    m_bandeau_led_haut(_Stor_BandeauLED_Haut),
+    m_bandeau_led_bas(_Stor_BandeauLED_Bas),
+    m_bandeau_led_tournant(_Stor_BandeauLED_Tournant)
 {
     ModeFonctionnement = MODE_AUTONOME;
     m_duree_pilotage_moteur = DUREE_PILOTAGE_MOTEUR_NOMINAL;
@@ -139,7 +141,10 @@ void CGlobale::Run(void)
   m_experience_state = EXPERIENCE_INIT;
   m_experience_state_old = m_experience_state + 1;  //+1 pour que les 2 n'aient pas la même valeur
 
-  m_bandeau_led.init();
+  m_bandeau_led_haut.init();
+  m_bandeau_led_bas.init();
+  m_bandeau_led_tournant.init();
+
   m_couleur_chenillard = BLUE;
 
   periodicTick.attach(&Application, &CGlobale::IRQ_Tick_ModeAutonome, (float(PERIODE_TICK)/1000.0f));
@@ -208,7 +213,24 @@ void CGlobale::SequenceurModeAutonome(void)
     m_bandeau_led_experience.compute();
     m_leds_mbed.setState(LED_4, _Etor_xbee_status);
 
-    if (m_experience_state == EXPERIENCE_IN_PROGRESS) m_bandeau_led.periodicTask();
+
+    /*if (m_experience_state == EXPERIENCE_IN_PROGRESS)*/
+
+    m_bandeau_led_haut.periodicTask();
+
+    m_bandeau_led_bas.periodicTask();
+    m_bandeau_led_bas.setPattern(1, 10, 30);
+    m_bandeau_led_bas.configOnOffColor(1, PURPLE, BLUE);
+
+    m_bandeau_led_bas.setPattern(5, 100, 50);
+    m_bandeau_led_bas.configOnOffColor(5, OLIVE, RED);
+
+
+    m_bandeau_led_tournant.periodicTask();
+    m_bandeau_led_tournant.setPattern(3, 100, 300);
+    m_bandeau_led_tournant.configOnOffColor(3, OFF_BLACK, GREEN);
+
+
   }
 
 
@@ -222,7 +244,7 @@ void CGlobale::SequenceurModeAutonome(void)
     stateflowExperience();
     m_leds_mbed.compute();
 
-    //animeChenillardBandeauLED();
+    animeChenillardBandeauLED();
   }
 
   // ______________________________
@@ -252,16 +274,16 @@ void CGlobale::SequenceurModeAutonome(void)
   if (cpt1sec >= TEMPO_1sec) {
   	cpt1sec = 0;
 
-    m_bandeau_led.setPattern(1, 10, 30);
-    m_bandeau_led.configOnOffColor(1, PURPLE, BLUE);
+    m_bandeau_led_haut.setPattern(1, 10, 30);
+    m_bandeau_led_haut.configOnOffColor(1, PURPLE, BLUE);
 
-    m_bandeau_led.setPattern(16, 50, 25);
-    m_bandeau_led.configOnOffColor(16, GREEN, OFF_BLACK);
+    m_bandeau_led_haut.setPattern(16, 50, 25);
+    m_bandeau_led_haut.configOnOffColor(16, GREEN, OFF_BLACK);
 
     for (int i=17; i<35; i++)
     {
-        m_bandeau_led.setPattern(i, 10, 50);
-        m_bandeau_led.configOnOffColor(i, WHITE, OFF_BLACK);
+        m_bandeau_led_haut.setPattern(i, 10, 50);
+        m_bandeau_led_haut.configOnOffColor(i, WHITE, OFF_BLACK);
     }
 
 
@@ -306,10 +328,10 @@ void CGlobale::animeChenillardBandeauLED()
     for (unsigned int i=0; i<NBRE_LED_CHENILLARD; i++)
     {
         int index_led = PREMIERE_LED_CHENILLARD + i;
-        m_bandeau_led.setColor(index_led, OFF_BLACK);
+        m_bandeau_led_haut.setColor(index_led, OFF_BLACK);
     }
 
-    m_bandeau_led.setColor(m_chenillard_state+PREMIERE_LED_CHENILLARD, m_couleur_chenillard);
+    m_bandeau_led_haut.setColor(m_chenillard_state+PREMIERE_LED_CHENILLARD, m_couleur_chenillard);
     m_chenillard_state++;
     if (m_chenillard_state >= NBRE_LED_CHENILLARD) {
         m_chenillard_state = 0;
@@ -336,7 +358,7 @@ void CGlobale::stateflowExperience()
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_WAITING_FOR_START;
             m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp = 0;
             m_messenger_xbee_ntw.m_database.m_RobotLegoStatus.Status = Message_ROBOTLEGO_STATUS::ROBOTLEGO_EN_PREPARATION;
-            commandMotor(0);
+            commandMotor(50);
             m_bandeau_led_experience.setState(false);
 
             commandeLocalRGBLED(LED_PURPLE, 0.01f);

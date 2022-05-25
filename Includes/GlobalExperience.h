@@ -72,7 +72,9 @@ public :
      CLed m_led4;
      CLeds m_leds_mbed;
 
-     LEDS_WS2812 m_bandeau_led;
+     LEDS_WS2812 m_bandeau_led_haut;
+     LEDS_WS2812 m_bandeau_led_bas;
+     LEDS_WS2812 m_bandeau_led_tournant;
 
     //! Départ de secours
     //! (VCC_capteur/512) -> 2.54cm

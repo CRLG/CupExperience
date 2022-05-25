@@ -16,8 +16,8 @@ PwmOut _local_rgb_led_G(p24);
 PwmOut _local_rgb_led_B(p25);
 
 // __________________________________________________ENTREES TOUT OU RIEN
-DigitalIn  	_Etor2(p6);
-DigitalIn  	_Etor3(p7);
+//DigitalIn  	_Etor2(p6);
+//DigitalIn  	_Etor3(p7);
 //DigitalIn  	_Etor4(p8);
 //DigitalIn  	_Etor5(p11);
 DigitalIn  	_Etor6(p12);
