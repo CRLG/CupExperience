@@ -122,6 +122,7 @@ private :
         EXPERIENCE_WAIT_START_EVENT,
         EXPERIENCE_IN_PROGRESS,
         EXPERIENCE_FINISHED,
+        EXPERIENCE_AUTOTEST,
         EXPERIENCE_ERROR,
     }tExperienceState;
     unsigned short m_experience_state;
@@ -140,9 +141,13 @@ private :
 
     void traitementTelemetre();
 
-    int m_chenillard_state;
-    unsigned long m_couleur_chenillard;
-    void animeChenillardBandeauLED();
+    int m_chenillard_bas_state;
+    int m_chenillard_haut_state;
+    unsigned long m_couleur_chenillard_haut;
+    unsigned long m_couleur_chenillard_bas;
+    void animeChenillardBandeauLED_Bas();
+    void animeChenillardBandeauLED_Haut();
+    void animeExperience();
 };
 
 

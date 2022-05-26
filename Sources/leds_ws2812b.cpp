@@ -1,7 +1,8 @@
 #include "leds_ws2812b.h"
 
 LEDS_WS2812::LEDS_WS2812(PinName pin)
-    : m_gpio(pin)
+    : m_gpio(pin),
+      m_nb_leds(NB_MAX_OF_LEDS)
 {
 }
 
@@ -13,7 +14,7 @@ LEDS_WS2812::~LEDS_WS2812()
 void LEDS_WS2812::init()
 {
     int i;
-    for (i=0; i<NB_OF_LEDS; i++) {
+    for (i=0; i<NB_MAX_OF_LEDS; i++) {
         LED_WS2812B[i].Ton          = 0;
         LED_WS2812B[i].Toff         = 0;
         LED_WS2812B[i].Timer        = 0;
@@ -25,12 +26,18 @@ void LEDS_WS2812::init()
     periodicTask();
 }
 
+// _______________________________________________
+void LEDS_WS2812::setNumberOfLeds(int nb)
+{
+    if (nb<NB_MAX_OF_LEDS) m_nb_leds = nb;
+}
+
 // =======================================================
 //                      API
 // =======================================================
 void LEDS_WS2812::setState(unsigned short index, unsigned char state)
 {
-    if (index >= NB_OF_LEDS) return;
+    if (index >= NB_MAX_OF_LEDS) return;
     
     if (state == 0) {   // Force l'etat OFF
         LED_WS2812B[index].Ton  = 0;
@@ -45,7 +52,7 @@ void LEDS_WS2812::setState(unsigned short index, unsigned char state)
 // _______________________________________________
 void LEDS_WS2812::setColor(unsigned short index, unsigned long rgb)
 {
-    if (index >= NB_OF_LEDS) return;
+    if (index >= NB_MAX_OF_LEDS) return;
     
     LED_WS2812B[index].ColorOn = rgb;
     setState(index, 1);
@@ -54,7 +61,7 @@ void LEDS_WS2812::setColor(unsigned short index, unsigned long rgb)
 // _______________________________________________
 void LEDS_WS2812::configOnOffColor(unsigned short index, unsigned long on_rgb, unsigned long off_rgb)
 {
-    if (index >= NB_OF_LEDS) return;
+    if (index >= NB_MAX_OF_LEDS) return;
 
     LED_WS2812B[index].ColorOn  = on_rgb;
     LED_WS2812B[index].ColorOff = off_rgb;
@@ -63,7 +70,7 @@ void LEDS_WS2812::configOnOffColor(unsigned short index, unsigned long on_rgb, u
 // _______________________________________________
 void LEDS_WS2812::setPattern(unsigned short index, unsigned char ton, unsigned char toff)
 {
-    if (index >= NB_OF_LEDS) return;
+    if (index >= NB_MAX_OF_LEDS) return;
     
     if ( (LED_WS2812B[index].Ton == ton) && (LED_WS2812B[index].Toff== toff) ) {
         // Ne rien faire
@@ -74,6 +81,46 @@ void LEDS_WS2812::setPattern(unsigned short index, unsigned char ton, unsigned c
     LED_WS2812B[index].Timer = 0;
 
 }
+
+// _______________________________________________
+void LEDS_WS2812::setAllState(unsigned char state)
+{
+    for (int i=0; i<m_nb_leds; i++) {
+        setState(i, state);
+    }
+}
+
+// _______________________________________________
+void LEDS_WS2812::setAllColor(unsigned long rgb)
+{
+    for (int i=0; i<m_nb_leds; i++) {
+        setColor(i, rgb);
+    }
+}
+
+// _______________________________________________
+void LEDS_WS2812::configAllOnOffColor(unsigned long on_rgb, unsigned long off_rgb)
+{
+    for (int i=0; i<m_nb_leds; i++) {
+        configOnOffColor(i, on_rgb, off_rgb);
+    }
+}
+
+// _______________________________________________
+void LEDS_WS2812::setAllPattern(unsigned char ton, unsigned char toff)
+{
+    for (int i=0; i<m_nb_leds; i++) {
+        setPattern(i, ton, toff);
+    }
+}
+
+// _______________________________________________
+int LEDS_WS2812::getNbOfLeds()
+{
+    return m_nb_leds;
+}
+
+
 
 // _______________________________________________
 void LEDS_WS2812::compute_led_state(unsigned short index)
@@ -99,7 +146,7 @@ void LEDS_WS2812::compute_led_state(unsigned short index)
 void LEDS_WS2812::periodicTask()
 {
     unsigned short i;
-    for (i=0; i<NB_OF_LEDS; i++) {
+    for (i=0; i<m_nb_leds; i++) {
         compute_led_state(i);
         unsigned long _color = LED_WS2812B[i].CurrentState==0?LED_WS2812B[i].ColorOff:LED_WS2812B[i].ColorOn;
         // envoie la trame pour la led courante

@@ -56,8 +56,8 @@ extern Serial _ax12_serial;
 
 // __________________________________________________SORTIE LED
 #define _Stor_BandeauLED_Haut       (p5)
-#define _Stor_BandeauLED_Bas        (p6)
-#define _Stor_BandeauLED_Tournant   (p7)
+#define _Stor_BandeauLED_Bas        (p7)
+#define _Stor_BandeauLED_Tournant   (p6)
 
 //extern DigitalIn  _Estart;
 #endif

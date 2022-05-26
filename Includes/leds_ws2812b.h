@@ -10,11 +10,19 @@ public :
     ~LEDS_WS2812();
 
     void init();
+    void setNumberOfLeds(int nb);
 
     void setState(unsigned short index, unsigned char state);
     void setColor(unsigned short index, unsigned long rgb);
     void configOnOffColor(unsigned short index, unsigned long on_rgb, unsigned long off_rgb);
     void setPattern(unsigned short index, unsigned char ton, unsigned char toff);
+
+    void setAllState(unsigned char state);
+    void setAllColor(unsigned long rgb);
+    void configAllOnOffColor(unsigned long on_rgb, unsigned long off_rgb);
+    void setAllPattern(unsigned char ton, unsigned char toff);
+
+    int getNbOfLeds();
 
     void periodicTask();
 
@@ -50,9 +58,12 @@ private :
 
     DigitalOut m_gpio;
 
-    #define NB_OF_LEDS   48     // 48 LED à contrôler
+    int m_nb_leds;
+
+
+    #define NB_MAX_OF_LEDS   48     // 48 LED max à contrôler
     #define BITS_PER_LED 24     // 1 LED = 24 bits
-    tWS2812BPattern LED_WS2812B[NB_OF_LEDS];
+    tWS2812BPattern LED_WS2812B[NB_MAX_OF_LEDS];
 
 };
 

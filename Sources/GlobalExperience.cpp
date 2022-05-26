@@ -142,10 +142,13 @@ void CGlobale::Run(void)
   m_experience_state_old = m_experience_state + 1;  //+1 pour que les 2 n'aient pas la même valeur
 
   m_bandeau_led_haut.init();
+  m_bandeau_led_haut.setNumberOfLeds(34);
   m_bandeau_led_bas.init();
+  m_bandeau_led_bas.setNumberOfLeds(40);
   m_bandeau_led_tournant.init();
+  m_bandeau_led_tournant.setNumberOfLeds(6);
 
-  m_couleur_chenillard = BLUE;
+  m_couleur_chenillard_haut = BLUE;
 
   periodicTick.attach(&Application, &CGlobale::IRQ_Tick_ModeAutonome, (float(PERIODE_TICK)/1000.0f));
 
@@ -213,24 +216,11 @@ void CGlobale::SequenceurModeAutonome(void)
     m_bandeau_led_experience.compute();
     m_leds_mbed.setState(LED_4, _Etor_xbee_status);
 
-
-    /*if (m_experience_state == EXPERIENCE_IN_PROGRESS)*/
-
-    m_bandeau_led_haut.periodicTask();
-
-    m_bandeau_led_bas.periodicTask();
-    m_bandeau_led_bas.setPattern(1, 10, 30);
-    m_bandeau_led_bas.configOnOffColor(1, PURPLE, BLUE);
-
-    m_bandeau_led_bas.setPattern(5, 100, 50);
-    m_bandeau_led_bas.configOnOffColor(5, OLIVE, RED);
-
-
-    m_bandeau_led_tournant.periodicTask();
-    m_bandeau_led_tournant.setPattern(3, 100, 300);
-    m_bandeau_led_tournant.configOnOffColor(3, OFF_BLACK, GREEN);
-
-
+    if (m_experience_state >= EXPERIENCE_IN_PROGRESS) {
+        m_bandeau_led_haut.periodicTask();
+        m_bandeau_led_bas.periodicTask();
+        m_bandeau_led_tournant.periodicTask();
+    }
   }
 
 
@@ -244,7 +234,8 @@ void CGlobale::SequenceurModeAutonome(void)
     stateflowExperience();
     m_leds_mbed.compute();
 
-    animeChenillardBandeauLED();
+    animeExperience();
+
   }
 
   // ______________________________
@@ -273,19 +264,6 @@ void CGlobale::SequenceurModeAutonome(void)
   cpt1sec++;
   if (cpt1sec >= TEMPO_1sec) {
   	cpt1sec = 0;
-
-    m_bandeau_led_haut.setPattern(1, 10, 30);
-    m_bandeau_led_haut.configOnOffColor(1, PURPLE, BLUE);
-
-    m_bandeau_led_haut.setPattern(16, 50, 25);
-    m_bandeau_led_haut.configOnOffColor(16, GREEN, OFF_BLACK);
-
-    for (int i=17; i<35; i++)
-    {
-        m_bandeau_led_haut.setPattern(i, 10, 50);
-        m_bandeau_led_haut.configOnOffColor(i, WHITE, OFF_BLACK);
-    }
-
 
     if (m_trace_debug_active) {
         _rs232_pc_tx.printf("m_distance_telemetre = %f\n\r", m_distance_telemetre);
@@ -321,27 +299,69 @@ void CGlobale::traitementTelemetre()
 }
 
 //___________________________________________________________________________
-#define NBRE_LED_CHENILLARD 10
-#define PREMIERE_LED_CHENILLARD 5
-void CGlobale::animeChenillardBandeauLED()
+#define NBRE_LED_CHENILLARD 16
+#define PREMIERE_LED_CHENILLARD 0
+void CGlobale::animeChenillardBandeauLED_Bas()
 {
     for (unsigned int i=0; i<NBRE_LED_CHENILLARD; i++)
     {
         int index_led = PREMIERE_LED_CHENILLARD + i;
-        m_bandeau_led_haut.setColor(index_led, OFF_BLACK);
+        m_bandeau_led_bas.setColor(index_led, OFF_BLACK);
     }
 
-    m_bandeau_led_haut.setColor(m_chenillard_state+PREMIERE_LED_CHENILLARD, m_couleur_chenillard);
-    m_chenillard_state++;
-    if (m_chenillard_state >= NBRE_LED_CHENILLARD) {
-        m_chenillard_state = 0;
-        switch(m_couleur_chenillard)
+    m_bandeau_led_bas.setColor(m_chenillard_bas_state+PREMIERE_LED_CHENILLARD, m_couleur_chenillard_bas);
+    m_chenillard_bas_state++;
+    if (m_chenillard_bas_state >= NBRE_LED_CHENILLARD) {
+        m_chenillard_bas_state = 0;
+        switch(m_couleur_chenillard_bas)
         {
-        case BLUE : m_couleur_chenillard = GREEN; break;
-        case GREEN : m_couleur_chenillard = RED; break;
-        default : m_couleur_chenillard = BLUE; break;
+        case BLUE : m_couleur_chenillard_bas = GREEN; break;
+        case GREEN : m_couleur_chenillard_bas = RED; break;
+        default : m_couleur_chenillard_bas = BLUE; break;
         }
     }
+}
+
+//___________________________________________________________________________
+void CGlobale::animeChenillardBandeauLED_Haut()
+{
+   m_bandeau_led_haut.setColor(m_chenillard_haut_state, OFF_BLACK);
+
+   m_chenillard_haut_state++;
+
+   if (m_chenillard_haut_state>=m_bandeau_led_haut.getNbOfLeds()) {
+       switch(m_couleur_chenillard_haut)
+       {
+       case BLUE : m_couleur_chenillard_haut = GREEN; break;
+       case GREEN : m_couleur_chenillard_haut = RED; break;
+       default : m_couleur_chenillard_haut = BLUE; break;
+       }
+       m_chenillard_haut_state = 0;
+   }
+   m_bandeau_led_haut.setColor(m_chenillard_haut_state, m_couleur_chenillard_haut);
+}
+
+//___________________________________________________________________________
+void CGlobale::animeExperience()
+{
+
+    // Bandeau du bas
+    animeChenillardBandeauLED_Bas();
+
+    // Mise en valeur de la vitrine par allumage en blanc de toutes les LED
+    for (int i=18; i<m_bandeau_led_bas.getNbOfLeds(); i++)
+    {
+        m_bandeau_led_bas.setPattern(i, 10, 50);
+        m_bandeau_led_bas.configOnOffColor(i, 0x101010, OFF_BLACK);
+    }
+
+    // Bandeau du haut
+    animeChenillardBandeauLED_Haut();
+
+    // Bandeau tournant
+    m_bandeau_led_tournant.setAllPattern(100, 200);
+    m_bandeau_led_tournant.configAllOnOffColor(RED, GREEN);
+
 }
 
 //___________________________________________________________________________
@@ -358,7 +378,7 @@ void CGlobale::stateflowExperience()
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_WAITING_FOR_START;
             m_messenger_xbee_ntw.m_database.m_TimestampMatch.Timestamp = 0;
             m_messenger_xbee_ntw.m_database.m_RobotLegoStatus.Status = Message_ROBOTLEGO_STATUS::ROBOTLEGO_EN_PREPARATION;
-            commandMotor(50);
+            commandMotor(0);
             m_bandeau_led_experience.setState(false);
 
             commandeLocalRGBLED(LED_PURPLE, 0.01f);
@@ -416,7 +436,7 @@ void CGlobale::stateflowExperience()
             commandeLocalRGBLED(LED_GREEN, 1.0f, cligno_led);
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_FINISHED;
         break;
-        // ________________________________________
+       // ________________________________________
         case EXPERIENCE_ERROR :
             commandeLocalRGBLED(LED_RED, 1.0f);
             m_messenger_xbee_ntw.m_database.m_ExperienceStatus.ExperienceStatus = Message_EXPERIENCE_STATUS::EXPERIENCE_ERROR;
