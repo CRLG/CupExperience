@@ -11,6 +11,8 @@
 #include "xbeedriver.h"
 #include "led.h"
 #include "leds_ws2812b.h"
+#include "C12832.h"
+#include "HX711.h"
 
 typedef enum {
 	MODE_AUTONOME = 0,
@@ -75,6 +77,10 @@ public :
      LEDS_WS2812 m_bandeau_led_haut;
      LEDS_WS2812 m_bandeau_led_bas;
      LEDS_WS2812 m_bandeau_led_tournant;
+
+     C12832 m_lcd;
+     HX711 m_scale; //(pinData, pinSCK, gain [128|32|64]) (A1,A0,64);
+
 
     //! Départ de secours
     //! (VCC_capteur/512) -> 2.54cm
@@ -148,6 +154,15 @@ private :
     void animeChenillardBandeauLED_Bas();
     void animeChenillardBandeauLED_Haut();
     void animeExperience();
+
+    void init_ecran();
+    void tare_balance();
+    void pese_compte_affiche_balles();
+
+    int m_totalNerf;         //holds the digital voltage value to be sent to the LED digits
+    int m_weight;
+    float m_yo;
+
 };
 
 

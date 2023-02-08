@@ -16,6 +16,8 @@ OBJDIR := BUILD
 # Objects and Paths specific for project
 INCLUDE_PATHS += -I../.
 INCLUDE_PATHS += -I../Includes
+INCLUDE_PATHS += -I../HX711
+INCLUDE_PATHS += -I../C12832
 
 OBJECTS += Sources/main.o
 OBJECTS += Sources/MessengerXbeeNetwork2019.o
@@ -24,6 +26,11 @@ OBJECTS += Sources/RessoucesHardware.o
 OBJECTS += Sources/GlobalExperience.o
 OBJECTS += Sources/led.o
 OBJECTS += Sources/leds_ws2812b.o
+OBJECTS += Sources/mbed_genie.o
+OBJECTS += HX711/HX711.o
+OBJECTS += C12832/C12832.o
+OBJECTS += C12832/GraphicsDisplay.o
+OBJECTS += C12832/TextDisplay.o
 
 ###############################################################################
 # Objects and Paths for mbed-common

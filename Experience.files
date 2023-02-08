@@ -183,6 +183,11 @@ Sources/GlobalExperience.cpp
 Sources/xbeedriver.cpp
 Sources/led.cpp
 Sources/leds_ws2812b.cpp
+Sources/mbed_genie.cpp
+HX711/HX711.cpp
+C12832/C12832.cpp
+C12832/GraphicsDisplay.cpp
+C12832/TextDisplay.cpp
 
 Includes/MessengerXbeeNetwork2019.h
 Includes/RessoucesHardware.h
@@ -190,6 +195,14 @@ Includes/GlobalExperience.h
 Includes/xbeedriver.h
 Includes/led.h
 Includes/leds_ws2812b.h
+Includes/mbed_genie.h
+HX711/HX711.h
+C12832/C12832.h
+C12832/GraphicsDisplay.h
+C12832/TextDisplay.h
+C12832/Small_7.h
+
+
 
 ext/CppRobLib/Communication/Messenger/databasebase.cpp
 ext/CppRobLib/Communication/Messenger/databasebase.h

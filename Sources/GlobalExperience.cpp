@@ -4,6 +4,35 @@
 #include "mbed.h"
 #include "RessourcesHardware.h"
 #include "GlobalExperience.h"
+#include "mbed_genie.h"
+
+int flag = 0;        //holds the "power status" of the voltmeter. flag = 0 means voltmeter is "off", flag = 1 means the voltmeter is "on".
+//Event handler for the 4d Systems display
+// Nico : à voir si on a vraiment besoin de cette partie car on ne fait qu'envoyer des infos vers l'écran et on ne traite pas le retour du tactile
+void myGenieEventHandler(void)
+{
+  genieFrame Event;
+  genieDequeueEvent(&Event);
+  //event report from an object
+  if(Event.reportObject.cmd == GENIE_REPORT_EVENT)
+  {
+    if (Event.reportObject.object == GENIE_OBJ_4DBUTTON)                // If the Reported Message was from a button
+    {
+        if (Event.reportObject.index == 0)
+        {
+             //printf("Off Button pressed!\n\r");
+             wait(0.2);
+             flag=1;
+        }
+        if (Event.reportObject.index == 1)
+        {
+             //printf("On Button pressed!\n\r");
+             wait(0.2);
+             flag=0;
+        }
+    }
+  }
+}
 
 //___________________________________________________________________________
  /*!
@@ -20,7 +49,9 @@ CGlobale::CGlobale()
       m_leds_mbed(&m_led1, &m_led2, &m_led3, &m_led4),
     m_bandeau_led_haut(_Stor_BandeauLED_Haut),
     m_bandeau_led_bas(_Stor_BandeauLED_Bas),
-    m_bandeau_led_tournant(_Stor_BandeauLED_Tournant)
+    m_bandeau_led_tournant(_Stor_BandeauLED_Tournant),
+    m_lcd(p5, p7, p6, p8, p11),
+    m_scale(A1,A0,64)//(pinData, pinSCK, gain [128|32|64]) (A1,A0,64);
 {
     ModeFonctionnement = MODE_AUTONOME;
     m_duree_pilotage_moteur = DUREE_PILOTAGE_MOTEUR_NOMINAL;
@@ -152,6 +183,10 @@ void CGlobale::Run(void)
 
   periodicTick.attach(&Application, &CGlobale::IRQ_Tick_ModeAutonome, (float(PERIODE_TICK)/1000.0f));
 
+  m_totalNerf = 0.0;
+  init_ecran();
+  tare_balance();
+
   while(1) {
       fflush(stdout); // ajout obligatoire ou un wait_us(1) ou fflush(stdout) sinon blocage de l'application
       if (Tick) {
@@ -235,7 +270,7 @@ void CGlobale::SequenceurModeAutonome(void)
     m_leds_mbed.compute();
 
     animeExperience();
-
+    pese_compte_affiche_balles();
   }
 
   // ______________________________
@@ -521,4 +556,39 @@ void CGlobale::commandeLocalRGBLED(char color, float intensity, bool blink)
             _local_rgb_led_B.write(1.0f - intensity*light_on);
         break;
     }
+}
+
+
+//___________________________________________________________________________
+void CGlobale::init_ecran()
+{
+    SetupGenie();
+    genieAttachEventHandler(&myGenieEventHandler);
+    genieWriteContrast(15); //set screen contrast to full brightness
+}
+
+
+//___________________________________________________________________________
+void CGlobale::tare_balance()
+{
+    //Tare
+    wait(1);
+    m_scale.tare();
+    m_lcd.locate(0,0);
+    m_lcd.printf("Tare ok");
+    wait(2);
+}
+
+//___________________________________________________________________________
+void CGlobale::pese_compte_affiche_balles()
+{
+    m_weight = m_scale.getGram();
+
+    m_totalNerf = - m_weight/6.07;
+    m_lcd.cls();
+    m_lcd.locate(0,0);
+    m_lcd.printf("Il y a %i balle(s)", m_totalNerf);
+    wait(0.5);
+    m_yo=m_totalNerf;
+    genieWriteObject(GENIE_OBJ_LED_DIGITS, 0x00, m_yo);      //write to Leddigits0 the value of totalNerf
 }

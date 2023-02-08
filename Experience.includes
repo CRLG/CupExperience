@@ -17,4 +17,6 @@ ext/CppRobLib/Communication/XBEE
 ext/CppRobLib/common-rob
 ext/CppRobLib/ServosAX
 Includes
+HX711
+C12832
 
